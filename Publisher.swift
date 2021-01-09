@@ -1,6 +1,6 @@
 //
 //  Publisher.swift
-//  SceneDepthPointCloud
+//  lidar2ros
 //
 //  Created by Christophe Bédard on 2021-01-05.
 //  Copyright © Christophe Bedard. All rights reserved.

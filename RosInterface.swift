@@ -1,6 +1,6 @@
 //
 //  RosInterface.swift
-//  SceneDepthPointCloud
+//  lidar2ros
 //
 //  Created by Christophe Bédard on 2021-01-06.
 //  Copyright © 2021 Christophe Bedard. All rights reserved.
