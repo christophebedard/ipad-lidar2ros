@@ -133,6 +133,17 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
             stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             stackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50)
         ])
+        
+        Timer.scheduledTimer(timeInterval: 1.0/10.0, target: self, selector: #selector(updateDepth), userInfo: nil, repeats: true)
+    }
+    
+    @objc
+    private func updateDepth() {
+        // TODO move to more appropriate place (non UI thread)
+        let depthMap = renderer.getDepthMap()
+        if nil != depthMap {
+            self.pubController?.update(depthMap!)
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -239,12 +250,6 @@ extension ViewController: MTKViewDelegate {
     // Called whenever the view needs to render
     func draw(in view: MTKView) {
         renderer.draw()
-        
-        // TODO move to more appropriate place (non UI thread)
-        let depthMap = renderer.getDepthMap()
-        if nil != depthMap {
-            self.pubController?.update(depthMap!)
-        }
     }
 }
 
