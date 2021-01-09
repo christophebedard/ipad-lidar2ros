@@ -31,11 +31,3 @@ struct sensor_msgs__Image : Encodable {
 struct std_msgs__String : Encodable {
     var data: String
 }
-
-struct MsgRaw<T> : Encodable where T : Encodable {
-    var op: String
-    var id: String
-    var topic: String
-    var type: String?
-    var msg: T?
-}

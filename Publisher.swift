@@ -50,7 +50,7 @@ final class Publisher {
         
         self.logger.debug("advertising \(self.topicName)")
         
-        let d = MsgRaw(op: "advertise", id: "advertise:\(self.topicName)", topic: self.topicName, type: self.type, msg: "")
+        let d = RosbridgeMsg(op: "advertise", id: "advertise:\(self.topicName)", topic: self.topicName, type: self.type, msg: "")
         if !self.interface.send(d) {
             return false
         }
@@ -70,7 +70,7 @@ final class Publisher {
         
         self.logger.debug("unadvertising \(self.topicName)")
         
-        let d = MsgRaw(op: "unadvertise", id: "unadvertise:\(self.topicName)", topic: self.topicName, type: nil, msg: "")
+        let d = RosbridgeMsg(op: "unadvertise", id: "unadvertise:\(self.topicName)", topic: self.topicName, type: nil, msg: "")
         if !self.interface.send(d) {
             return false
         }
@@ -91,7 +91,7 @@ final class Publisher {
         self.logger.debug("publishing \(self.topicName)")
         self.counter += 1
         
-        let d = MsgRaw(op: "publish", id: "publish:\(self.topicName):\(self.counter)", topic: self.topicName, type: nil, msg: msg)
+        let d = RosbridgeMsg(op: "publish", id: "publish:\(self.topicName):\(self.counter)", topic: self.topicName, type: nil, msg: msg)
         return self.interface.send(d)
     }
 }

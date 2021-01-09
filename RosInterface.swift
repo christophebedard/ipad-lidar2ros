@@ -9,7 +9,16 @@
 import Foundation
 import OSLog
 
-/// Interface for ROS.
+/// Raw message for interacting with rosbridge.
+struct RosbridgeMsg<T> : Encodable where T : Encodable {
+    var op: String
+    var id: String
+    var topic: String
+    var type: String?
+    var msg: T?
+}
+
+/// Interface for ROS & rosbridge.
 ///
 /// Handles websocket connection and sending data.
 final class RosInterface {
@@ -143,6 +152,10 @@ final class RosInterface {
         return true
     }
     
+    /// Convert encodable object to data.
+    ///
+    /// - parameter encodable: the encodable object
+    /// - returns: the corresponding data object, or `nil` if it failed
     private func toJson<T>(_ encodable: T) -> Data? where T : Encodable {
         do {
             let json = try self.jsonEncoder.encode(encodable)
