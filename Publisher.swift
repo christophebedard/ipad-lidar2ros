@@ -50,9 +50,8 @@ final class Publisher {
         
         self.logger.debug("advertising \(self.topicName)")
         
-        let d = MsgRaw(op: "advertise", id: "advertise:\(self.topicName)", topic: self.topicName, type: self.type, msg: nil)
-        let data = self.interface.toJson(data: d)!
-        if !self.interface.send(data: data) {
+        let d = MsgRaw(op: "advertise", id: "advertise:\(self.topicName)", topic: self.topicName, type: self.type, msg: "")
+        if !self.interface.send(d) {
             return false
         }
         self.isAdvertised = true
@@ -71,9 +70,8 @@ final class Publisher {
         
         self.logger.debug("unadvertising \(self.topicName)")
         
-        let d = MsgRaw(op: "unadvertise", id: "unadvertise:\(self.topicName)", topic: self.topicName, type: nil, msg: nil)
-        let data = self.interface.toJson(data: d)!
-        if !self.interface.send(data: data) {
+        let d = MsgRaw(op: "unadvertise", id: "unadvertise:\(self.topicName)", topic: self.topicName, type: nil, msg: "")
+        if !self.interface.send(d) {
             return false
         }
         self.isAdvertised = false
@@ -93,8 +91,8 @@ final class Publisher {
         self.logger.debug("publishing \(self.topicName)")
         self.counter += 1
         
-        let d = MsgRaw(op: "publish", id: "publish:\(self.topicName):\(self.counter)", topic: self.topicName, type: nil, msg: msg)
-        let data = self.interface.toJson(data: d)!
-        return self.interface.send(data: data)
+        let msgStr = std_msgs__String(data: msg)
+        let d = MsgRaw(op: "publish", id: "publish:\(self.topicName):\(self.counter)", topic: self.topicName, type: nil, msg: msgStr)
+        return self.interface.send(d)
     }
 }

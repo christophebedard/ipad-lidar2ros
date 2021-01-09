@@ -17,6 +17,7 @@ protocol ViewWithPubController {
 /// Controller for publishing.
 final class PubController {
     private let logger = Logger(subsystem: "com.christophebedard.lidar2ros", category: "PubController")
+    private let TOPIC_TYPE = "std_msgs/msg/String"
     
     private var url: String?
     
@@ -65,6 +66,7 @@ final class PubController {
     
     /// Update and publish if enabled.
     public func update() {
+        // TODO take depth data
         self.logger.debug("update")
         
         if self.isEnabled {
@@ -106,7 +108,7 @@ final class PubController {
             if nil != self.pub {
                 self.interface.destroyPublisher(pub: self.pub!)
             }
-            self.pub = self.interface.createPublisher(topicName: topicName!, type: "std_msgs/msg/String")
+            self.pub = self.interface.createPublisher(topicName: topicName!, type: self.TOPIC_TYPE)
             if nil == self.pub {
                 return false
             }

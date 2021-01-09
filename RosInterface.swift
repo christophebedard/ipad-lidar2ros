@@ -9,14 +9,6 @@
 import Foundation
 import OSLog
 
-struct MsgRaw : Codable {
-    var op: String
-    var id: String
-    var topic: String
-    var type: String?
-    var msg: String?
-}
-
 /// Interface for ROS.
 ///
 /// Handles websocket connection and sending data.
@@ -128,7 +120,7 @@ final class RosInterface {
     ///
     /// - parameter data: the raw data to send
     /// - returns: true if successful, false otherwise
-    public func send(data: String) -> Bool {
+    public func send<T>(_ encodable: T) -> Bool where T : Encodable {
         if !self.isConnected {
             self.logger.info("trying to send without being connected")
             return false
@@ -136,8 +128,12 @@ final class RosInterface {
         
         self.logger.debug("sending data")
         
-        self.logger.debug("sending: \(data)")
-        let messageData = URLSessionWebSocketTask.Message.string(data)
+        let data = self.toJson(encodable)
+        if nil == data {
+            return false
+        }
+        
+        let messageData = URLSessionWebSocketTask.Message.data(data!)
         self.socket?.send(messageData) { error in
             if let error = error {
                 self.logger.error("error sending over socket")
@@ -147,10 +143,10 @@ final class RosInterface {
         return true
     }
     
-    public func toJson<T>(data: T) -> String? where T : Encodable {
+    private func toJson<T>(_ encodable: T) -> Data? where T : Encodable {
         do {
-            let json = try self.jsonEncoder.encode(data)
-            return String(data: json, encoding: .utf8)
+            let json = try self.jsonEncoder.encode(encodable)
+            return json
         } catch {
             self.logger.error("error encoding or sending over socket")
             print(error)
