@@ -24,20 +24,15 @@ struct RosbridgeMsg<T> : Encodable where T : Encodable {
 final class RosInterface {
     private let URL_REGEX = "^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:\\d{2,4}$"
     
-    private var logger: Logger
+    private var logger = Logger(subsystem: "com.christophebedard.lidar2ros", category: "RosInterface")
+    
     private var url: String?
     private var socket: URLSessionWebSocketTask?
-    private var isConnected: Bool
+    private var isConnected = false
     
     private var publishers: [String: Publisher] = [:]
     
     private let jsonEncoder: JSONEncoder = JSONEncoder()
-    
-    init() {
-        self.isConnected = false
-        
-        self.logger = Logger(subsystem: "com.christophebedard.lidar2ros", category: "RosInterface")
-    }
     
     /// Connect.
     ///
