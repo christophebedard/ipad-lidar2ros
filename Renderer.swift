@@ -55,6 +55,12 @@ final class Renderer {
                                                             array: makeGridPoints(),
                                                             index: kGridPoints.rawValue, options: [])
     
+    private var depthMap: CVPixelBuffer?
+    
+    public func getDepthMap() -> CVPixelBuffer? {
+        return depthMap
+    }
+    
     // RGB buffer
     private lazy var rgbUniforms: RGBUniforms = {
         var uniforms = RGBUniforms()
@@ -148,6 +154,8 @@ final class Renderer {
             let confidenceMap = frame.sceneDepth?.confidenceMap else {
                 return false
         }
+        
+        self.depthMap = depthMap
         
 //        print(depthMap)
 

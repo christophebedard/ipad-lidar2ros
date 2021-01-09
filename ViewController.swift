@@ -239,8 +239,12 @@ extension ViewController: MTKViewDelegate {
     // Called whenever the view needs to render
     func draw(in view: MTKView) {
         renderer.draw()
+        
         // TODO move to more appropriate place (non UI thread)
-        self.pubController?.update()
+        let depthMap = renderer.getDepthMap()
+        if nil != depthMap {
+            self.pubController?.update(depthMap!)
+        }
     }
 }
 

@@ -8,6 +8,7 @@
 
 import Foundation
 import OSLog
+import ARKit
 
 /// Simple protocol for a view controller with a PubController.
 protocol ViewWithPubController {
@@ -66,18 +67,13 @@ final class PubController {
     }
     
     /// Update and publish if enabled.
-    public func update() {
+    public func update(_ depth: CVPixelBuffer) {
         // TODO take depth data
         self.logger.debug("update")
         
         if self.isEnabled {
             // TODO disable if publish fails?
-            let date = Date()
-            let sec = Int32(date.timeIntervalSince1970)
-            let time = builtin_interfaces__Time(sec: sec, nanosec: 0)
-            let header = std_msgs__Header(stamp: time, frame_id: "world")
-            let img = sensor_msgs__Image(header: header, height: 4, width: 4, encoding: "mono8", is_bigendian: 0, step: 4, data: [0, 10, 20, 30, 40, 50, 60, 80, 90, 100, 110, 120, 130, 140, 150])
-            self.pub?.publish(img)
+            self.pub?.publish(RosUtils.depthMapToImage(depth))
         }
     }
     
