@@ -9,6 +9,14 @@
 import Foundation
 import OSLog
 
+struct MsgRaw : Codable {
+    var op: String
+    var id: String
+    var topic: String
+    var type: String?
+    var msg: String?
+}
+
 /// Interface for ROS.
 ///
 /// Handles websocket connection and sending data.
@@ -118,31 +126,36 @@ final class RosInterface {
     
     /// Send data.
     ///
-    /// - parameter data: the data to send
+    /// - parameter data: the raw data to send
     /// - returns: true if successful, false otherwise
-    public func send(data: [String: String]) -> Bool {
+    public func send(data: String) -> Bool {
         if !self.isConnected {
             self.logger.info("trying to send without being connected")
             return false
         }
         
         self.logger.debug("sending data")
-        do {
-            // TODO
-            let jsonData = try self.jsonEncoder.encode(data)
-            let messageData = URLSessionWebSocketTask.Message.data(jsonData)
-            self.socket?.send(messageData) { error in
-                if let error = error {
-                    self.logger.error("error sending over socket")
-                    print(error)
-                }
+        
+        self.logger.debug("sending: \(data)")
+        let messageData = URLSessionWebSocketTask.Message.string(data)
+        self.socket?.send(messageData) { error in
+            if let error = error {
+                self.logger.error("error sending over socket")
+                print(error)
             }
+        }
+        return true
+    }
+    
+    public func toJson<T>(data: T) -> String? where T : Encodable {
+        do {
+            let json = try self.jsonEncoder.encode(data)
+            return String(data: json, encoding: .utf8)
         } catch {
             self.logger.error("error encoding or sending over socket")
             print(error)
-            return false
         }
-        return true
+        return nil
     }
     
     /// Check if a string matches a regex.
