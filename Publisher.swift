@@ -83,7 +83,7 @@ final class Publisher {
     /// - parameter msg: the message to publish
     /// - returns: true if successful, false otherwise
     @discardableResult
-    public func publish(msg: String) -> Bool {
+    public func publish<T>(_ msg: T) -> Bool where T : Encodable {
         if !self.isAdvertised && !self.advertise() {
             return false
         }
@@ -91,8 +91,7 @@ final class Publisher {
         self.logger.debug("publishing \(self.topicName)")
         self.counter += 1
         
-        let msgStr = std_msgs__String(data: msg)
-        let d = MsgRaw(op: "publish", id: "publish:\(self.topicName):\(self.counter)", topic: self.topicName, type: nil, msg: msgStr)
+        let d = MsgRaw(op: "publish", id: "publish:\(self.topicName):\(self.counter)", topic: self.topicName, type: nil, msg: msg)
         return self.interface.send(d)
     }
 }

@@ -14,10 +14,11 @@ protocol ViewWithPubController {
     func setPubController(pubController: PubController)
 }
 
-/// Controller for publishing.
+/// Controller for publishing depth data.
+/// TODO rename to "DepthPubController"
 final class PubController {
     private let logger = Logger(subsystem: "com.christophebedard.lidar2ros", category: "PubController")
-    private let TOPIC_TYPE = "std_msgs/msg/String"
+    private let TOPIC_TYPE = "sensor_msgs/msg/Image"
     
     private var url: String?
     
@@ -71,7 +72,12 @@ final class PubController {
         
         if self.isEnabled {
             // TODO disable if publish fails?
-            self.pub?.publish(msg: "hello")
+            let date = Date()
+            let sec = Int32(date.timeIntervalSince1970)
+            let time = builtin_interfaces__Time(sec: sec, nanosec: 0)
+            let header = std_msgs__Header(stamp: time, frame_id: "world")
+            let img = sensor_msgs__Image(header: header, height: 4, width: 4, encoding: "mono8", is_bigendian: 0, step: 4, data: [0, 10, 20, 30, 40, 50, 60, 80, 90, 100, 110, 120, 130, 140, 150])
+            self.pub?.publish(img)
         }
     }
     
