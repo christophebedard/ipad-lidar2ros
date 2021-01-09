@@ -70,23 +70,15 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
         rgbRadiusSlider.value = renderer.rgbRadius
         rgbRadiusSlider.addTarget(self, action: #selector(viewValueChanged), for: .valueChanged)
         
-        // WebSocket URL field, label, and switch
+        // WebSocket URL field and label
         urlTextField.borderStyle = UITextField.BorderStyle.bezel
         urlTextField.clearButtonMode = UITextField.ViewMode.whileEditing
         urlTextField.autocorrectionType = UITextAutocorrectionType.no
         urlTextField.placeholder = "192.168.0.xyz:abcd"
         urlTextField.addTarget(self, action: #selector(viewValueChanged), for: .editingDidEndOnExit)
         urlTextFieldLabel.attributedText = NSAttributedString(string: "IP and port")
-        statusSwitch.preferredStyle = UISwitch.Style.checkbox
-        statusSwitch.addTarget(self, action: #selector(statusChanged), for: .valueChanged)
-        // Side by side
-        let urlStackView = UIStackView(arrangedSubviews: [urlTextFieldLabel, urlTextField, statusSwitch])
-        urlStackView.isHidden = !isUIEnabled
-        urlStackView.translatesAutoresizingMaskIntoConstraints = false
-        urlStackView.axis = .horizontal
-        urlStackView.spacing = 10
         
-        // Topic field and label
+        // Topic name field and label
         topicNameTextField.borderStyle = UITextField.BorderStyle.bezel
         topicNameTextField.clearButtonMode = UITextField.ViewMode.whileEditing
         topicNameTextField.autocorrectionType = UITextAutocorrectionType.no
@@ -94,15 +86,44 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
         topicNameTextField.text = topicNameTextField.placeholder
         topicNameTextField.addTarget(self, action: #selector(viewValueChanged), for: .editingDidEndOnExit)
         topicNameTextFieldLabel.attributedText = NSAttributedString(string: "Topic name")
-        // Side by side
-        let topicNameStackView = UIStackView(arrangedSubviews: [topicNameTextFieldLabel, topicNameTextField])
-        topicNameStackView.isHidden = !isUIEnabled
-        topicNameStackView.translatesAutoresizingMaskIntoConstraints = false
-        topicNameStackView.axis = .horizontal
-        topicNameStackView.spacing = 10
+        
+        // Switch
+        statusSwitch.preferredStyle = UISwitch.Style.checkbox
+        statusSwitch.addTarget(self, action: #selector(statusChanged), for: .valueChanged)
+        
+        // Stacks
+        let labelsStackView = UIStackView(arrangedSubviews: [urlTextFieldLabel, topicNameTextFieldLabel])
+        labelsStackView.isHidden = !isUIEnabled
+        labelsStackView.translatesAutoresizingMaskIntoConstraints = false
+        labelsStackView.axis = .vertical
+        labelsStackView.spacing = 10
+        labelsStackView.alignment = UIStackView.Alignment.fill
+        labelsStackView.distribution = UIStackView.Distribution.fillEqually
+        let textFieldsStackView = UIStackView(arrangedSubviews: [urlTextField, topicNameTextField])
+        textFieldsStackView.isHidden = !isUIEnabled
+        textFieldsStackView.translatesAutoresizingMaskIntoConstraints = false
+        textFieldsStackView.axis = .vertical
+        textFieldsStackView.spacing = 10
+        textFieldsStackView.alignment = UIStackView.Alignment.fill
+        textFieldsStackView.distribution = UIStackView.Distribution.fillEqually
+        let statusSwitchView = UIStackView(arrangedSubviews: [statusSwitch])
+        statusSwitchView.isHidden = !isUIEnabled
+        statusSwitchView.translatesAutoresizingMaskIntoConstraints = false
+        statusSwitchView.axis = .horizontal
+        textFieldsStackView.spacing = 10
+        statusSwitchView.alignment = UIStackView.Alignment.center
+        statusSwitchView.distribution = UIStackView.Distribution.fill
+        
+        let rosStackView = UIStackView(arrangedSubviews: [labelsStackView, textFieldsStackView, statusSwitchView])
+        rosStackView.isHidden = !isUIEnabled
+        rosStackView.translatesAutoresizingMaskIntoConstraints = false
+        rosStackView.axis = .horizontal
+        rosStackView.spacing = 10
+        labelsStackView.alignment = UIStackView.Alignment.center
+        labelsStackView.distribution = UIStackView.Distribution.fill
         
         // Then stacked vertically
-        let stackView = UIStackView(arrangedSubviews: [urlStackView, topicNameStackView, confidenceControl, rgbRadiusSlider])
+        let stackView = UIStackView(arrangedSubviews: [rosStackView, confidenceControl, rgbRadiusSlider])
         stackView.isHidden = !isUIEnabled
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
