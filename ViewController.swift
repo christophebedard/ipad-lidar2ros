@@ -146,7 +146,7 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
             let depthMap = currentFrame!.sceneDepth?.depthMap
             let pointCloud = currentFrame!.rawFeaturePoints?.points
             if nil != depthMap && nil != pointCloud {
-                self.pubController?.update(time: timestamp, depth: depthMap!, points: pointCloud!)
+                self.pubController?.update(time: timestamp, depthMap: depthMap!, points: pointCloud!)
             }
         }
     }

@@ -19,7 +19,8 @@ protocol ViewWithPubController {
 /// TODO rename to "DepthPubController"
 final class PubController {
     private let logger = Logger(subsystem: "com.christophebedard.lidar2ros", category: "PubController")
-    private let TOPIC_TYPE = "sensor_msgs/msg/Image"
+//    private let TOPIC_TYPE = "sensor_msgs/msg/Image"
+    private let TOPIC_TYPE = "sensor_msgs/msg/PointCloud2"
     
     private var url: String?
     
@@ -67,12 +68,13 @@ final class PubController {
     }
     
     /// Update and publish if enabled.
-    public func update(time: Double, depth: CVPixelBuffer, points: [vector_float3]) {
+    public func update(time: Double, depthMap: CVPixelBuffer, points: [vector_float3]) {
         self.logger.debug("update")
         
         if self.isEnabled {
             // TODO disable if publish fails?
-            self.pub?.publish(RosMessagesUtils.depthMapToImage(time: time, depth: depth))
+//            self.pub?.publish(RosMessagesUtils.depthMapToImage(time: time, depthMap: depth))
+            self.pub?.publish(RosMessagesUtils.pointsToPointCloud2(time: time, points: points))
         }
     }
     
