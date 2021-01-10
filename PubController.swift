@@ -16,7 +16,6 @@ protocol ViewWithPubController {
 }
 
 /// Controller for publishing depth data.
-/// TODO rename to "DepthPubController"
 final class PubController {
     private let logger = Logger(subsystem: "com.christophebedard.lidar2ros", category: "PubController")
     
@@ -24,17 +23,39 @@ final class PubController {
     
     private var isEnabled: Bool = false
     private let interface = RosInterface()
-    private var pub: Publisher?
+    private var pubDepth: ControlledPublisher
+    private var pubPointCloud: ControlledPublisher
+    
+    init() {
+        self.pubDepth = ControlledPublisher(interface: self.interface, type: sensor_msgs__Image.self)
+        self.pubPointCloud = ControlledPublisher(interface: self.interface, type: sensor_msgs__PointCloud2.self)
+    }
+    
+    public func enableDepth(topicName: String?) -> Bool {
+        return self.pubDepth.enable(topicName: topicName)
+    }
+    
+    public func disableDepth() {
+        self.pubDepth.disable()
+    }
+    
+    public func enablePointCloud(topicName: String?) -> Bool {
+        return self.pubPointCloud.enable(topicName: topicName)
+    }
+    
+    public func disablePointCloud() {
+        self.pubPointCloud.disable()
+    }
     
     /// Enable and connect.
     ///
     /// - parameter url: the new URL to use, or `nil` to keep the current one
     /// - parameter topicName: the new topic name to use, or `nil` to keep the current one
     /// - returns: true if enabling was was successful, false otherwise
-    public func enable(url: String?, topicName: String?) -> Bool {
+    public func enable(url: String?, topicNameDepth: String?, topicNamePointCloud: String?) -> Bool {
         self.logger.debug("enable")
         self.isEnabled = true
-        if !self.updateTopic(topicName: topicName) {
+        if !self.pubDepth.updateTopic(topicName: topicNameDepth) || !self.pubPointCloud.updateTopic(topicName: topicNamePointCloud) {
             return false
         }
         return self.updateConnection(url: url)
@@ -71,8 +92,8 @@ final class PubController {
         
         if self.isEnabled {
             // TODO disable if publish fails?
-//            self.pub?.publish(RosMessagesUtils.depthMapToImage(time: time, depthMap: depth))
-            self.pub?.publish(RosMessagesUtils.pointsToPointCloud2(time: time, points: points))
+            self.pubDepth.publish(RosMessagesUtils.depthMapToImage(time: time, depthMap: depthMap))
+            self.pubPointCloud.publish(RosMessagesUtils.pointsToPointCloud2(time: time, points: points))
         }
     }
     
@@ -93,27 +114,5 @@ final class PubController {
             self.disable()
             return false
         }
-    }
-    
-    /// Update the topic.
-    ///
-    /// Replaces the current publisher if needed.
-    ///
-    /// - parameter topicName: the topic name
-    /// - returns: true if successful, false otherwise
-    private func updateTopic(topicName: String?) -> Bool {
-        let currentTopic = self.pub?.getTopicName()
-        if nil != topicName && currentTopic != topicName {
-            // Replace publisher
-            self.logger.debug("replacing publisher: changing topic from \(currentTopic ?? "(none)") to \(topicName!)")
-            if nil != self.pub {
-                self.interface.destroyPublisher(pub: self.pub!)
-            }
-            self.pub = self.interface.createPublisher(topicName: topicName!, type: sensor_msgs__PointCloud2.self)
-            if nil == self.pub {
-                return false
-            }
-        }
-        return true
     }
 }

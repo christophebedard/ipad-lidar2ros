@@ -18,11 +18,18 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
     private let confidenceControl = UISegmentedControl(items: ["Low", "Medium", "High"])
     private let rgbRadiusSlider = UISlider()
     
+    // Global/connection
     private let urlTextField = UITextField()
     private let urlTextFieldLabel = UILabel()
     private let statusSwitch = UISwitch()
-    private let topicNameTextField = UITextField()
-    private let topicNameTextFieldLabel = UILabel()
+    // Depth
+    private let topicNameDepthTextField = UITextField()
+    private let topicNameDepthTextFieldLabel = UILabel()
+    private let statusSwitchDepth = UISwitch()
+    // Point cloud
+    private let topicNamePointCloudTextField = UITextField()
+    private let topicNamePointCloudTextFieldLabel = UILabel()
+    private let statusSwitchPointCloud = UISwitch()
     
     private let session = ARSession()
     private var renderer: Renderer!
@@ -70,57 +77,72 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
         rgbRadiusSlider.value = renderer.rgbRadius
         rgbRadiusSlider.addTarget(self, action: #selector(viewValueChanged), for: .valueChanged)
         
-        // WebSocket URL field and label
+        // WebSocket URL field, label, and global switch
         urlTextField.borderStyle = UITextField.BorderStyle.bezel
         urlTextField.clearButtonMode = UITextField.ViewMode.whileEditing
         urlTextField.autocorrectionType = UITextAutocorrectionType.no
         urlTextField.placeholder = "192.168.0.xyz:abcd"
         urlTextField.addTarget(self, action: #selector(viewValueChanged), for: .editingDidEndOnExit)
-        urlTextFieldLabel.attributedText = NSAttributedString(string: "IP and port")
         
-        // Topic name field and label
-        topicNameTextField.borderStyle = UITextField.BorderStyle.bezel
-        topicNameTextField.clearButtonMode = UITextField.ViewMode.whileEditing
-        topicNameTextField.autocorrectionType = UITextAutocorrectionType.no
-        topicNameTextField.placeholder = "/my_topic"
-        topicNameTextField.text = topicNameTextField.placeholder
-        topicNameTextField.addTarget(self, action: #selector(viewValueChanged), for: .editingDidEndOnExit)
-        topicNameTextFieldLabel.attributedText = NSAttributedString(string: "Topic name")
+        urlTextFieldLabel.attributedText = NSAttributedString(string: "Remote bridge")
         
-        // Switch
         statusSwitch.preferredStyle = UISwitch.Style.checkbox
         statusSwitch.addTarget(self, action: #selector(statusChanged), for: .valueChanged)
         
+        // Depth topic name field, label, and switch
+        topicNameDepthTextField.borderStyle = UITextField.BorderStyle.bezel
+        topicNameDepthTextField.clearButtonMode = UITextField.ViewMode.whileEditing
+        topicNameDepthTextField.autocorrectionType = UITextAutocorrectionType.no
+        topicNameDepthTextField.placeholder = "/topic_depth"
+        topicNameDepthTextField.text = topicNameDepthTextField.placeholder
+        topicNameDepthTextField.addTarget(self, action: #selector(viewValueChanged), for: .editingDidEndOnExit)
+        
+        topicNameDepthTextFieldLabel.attributedText = NSAttributedString(string: "Depth map")
+        
+        statusSwitchDepth.preferredStyle = UISwitch.Style.checkbox
+        statusSwitchDepth.addTarget(self, action: #selector(statusChanged), for: .valueChanged)
+        
+        // Point cloud topic name field and label
+        topicNamePointCloudTextField.borderStyle = UITextField.BorderStyle.bezel
+        topicNamePointCloudTextField.clearButtonMode = UITextField.ViewMode.whileEditing
+        topicNamePointCloudTextField.autocorrectionType = UITextAutocorrectionType.no
+        topicNamePointCloudTextField.placeholder = "/topic_pointcloud"
+        topicNamePointCloudTextField.text = topicNamePointCloudTextField.placeholder
+        topicNamePointCloudTextField.addTarget(self, action: #selector(viewValueChanged), for: .editingDidEndOnExit)
+        
+        topicNamePointCloudTextFieldLabel.attributedText = NSAttributedString(string: "Point cloud")
+        
+        statusSwitchPointCloud.preferredStyle = UISwitch.Style.checkbox
+        statusSwitchPointCloud.addTarget(self, action: #selector(statusChanged), for: .valueChanged)
+        
         // Stacks
-        let labelsStackView = UIStackView(arrangedSubviews: [urlTextFieldLabel, topicNameTextFieldLabel])
+        let labelsStackView = UIStackView(arrangedSubviews: [urlTextFieldLabel, topicNameDepthTextFieldLabel, topicNamePointCloudTextFieldLabel])
         labelsStackView.isHidden = !isUIEnabled
         labelsStackView.translatesAutoresizingMaskIntoConstraints = false
         labelsStackView.axis = .vertical
         labelsStackView.spacing = 10
         labelsStackView.alignment = UIStackView.Alignment.fill
         labelsStackView.distribution = UIStackView.Distribution.fillEqually
-        let textFieldsStackView = UIStackView(arrangedSubviews: [urlTextField, topicNameTextField])
+        let textFieldsStackView = UIStackView(arrangedSubviews: [urlTextField, topicNameDepthTextField, topicNamePointCloudTextField])
         textFieldsStackView.isHidden = !isUIEnabled
         textFieldsStackView.translatesAutoresizingMaskIntoConstraints = false
         textFieldsStackView.axis = .vertical
         textFieldsStackView.spacing = 10
         textFieldsStackView.alignment = UIStackView.Alignment.fill
         textFieldsStackView.distribution = UIStackView.Distribution.fillEqually
-        let statusSwitchView = UIStackView(arrangedSubviews: [statusSwitch])
-        statusSwitchView.isHidden = !isUIEnabled
-        statusSwitchView.translatesAutoresizingMaskIntoConstraints = false
-        statusSwitchView.axis = .horizontal
-        textFieldsStackView.spacing = 10
-        statusSwitchView.alignment = UIStackView.Alignment.center
-        statusSwitchView.distribution = UIStackView.Distribution.fill
+        let statusSwitchesView = UIStackView(arrangedSubviews: [statusSwitch, statusSwitchDepth, statusSwitchPointCloud])
+        statusSwitchesView.isHidden = !isUIEnabled
+        statusSwitchesView.translatesAutoresizingMaskIntoConstraints = false
+        statusSwitchesView.spacing = 10
+        statusSwitchesView.axis = .vertical
+        statusSwitchesView.alignment = UIStackView.Alignment.center
+        statusSwitchesView.distribution = UIStackView.Distribution.fill
         
-        let rosStackView = UIStackView(arrangedSubviews: [labelsStackView, textFieldsStackView, statusSwitchView])
+        let rosStackView = UIStackView(arrangedSubviews: [labelsStackView, textFieldsStackView, statusSwitchesView])
         rosStackView.isHidden = !isUIEnabled
         rosStackView.translatesAutoresizingMaskIntoConstraints = false
         rosStackView.axis = .horizontal
         rosStackView.spacing = 10
-        labelsStackView.alignment = UIStackView.Alignment.center
-        labelsStackView.distribution = UIStackView.Distribution.fill
         
         // Then stacked vertically
         let stackView = UIStackView(arrangedSubviews: [rosStackView, confidenceControl, rgbRadiusSlider])
@@ -183,10 +205,13 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
             renderer.rgbRadius = rgbRadiusSlider.value
             
         case urlTextField:
-            self.enableAndUpdateSwitch(url: self.urlTextField.text, topicName: self.topicNameTextField.text)
+            self.enableAndUpdateSwitch(uiSwitch: self.statusSwitch, url: self.urlTextField.text, topicNameDepth: self.topicNameDepthTextField.text, topicNamePointCloud: self.topicNamePointCloudTextField.text)
             
-        case topicNameTextField:
-            self.enableAndUpdateSwitch(url: nil, topicName: self.topicNameTextField.text)
+        case topicNameDepthTextField:
+            self.enableAndUpdateSwitch(uiSwitch: self.statusSwitchDepth, url: nil, topicNameDepth: self.topicNameDepthTextField.text, topicNamePointCloud: nil)
+            
+        case topicNamePointCloudTextField:
+            self.enableAndUpdateSwitch(uiSwitch: self.statusSwitchPointCloud, url: nil, topicNameDepth: nil, topicNamePointCloud: self.topicNamePointCloudTextField.text)
             
         default:
             break
@@ -194,18 +219,56 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
     }
     
     @objc
-    private func statusChanged() {
-        if self.statusSwitch.isOn {
-            self.enableAndUpdateSwitch(url: nil, topicName: self.topicNameTextField.text)
-        } else {
-            self.pubController?.disable()
+    private func statusChanged(view: UIView) {
+        switch view {
+            
+        case statusSwitch:
+            if self.statusSwitch.isOn {
+                self.enableAndUpdateSwitch(uiSwitch: self.statusSwitch, url: nil, topicNameDepth: self.topicNameDepthTextField.text, topicNamePointCloud: self.topicNamePointCloudTextField.text)
+            } else {
+                self.pubController?.disable()
+            }
+            
+        case statusSwitchDepth:
+            if self.statusSwitchDepth.isOn {
+                self.enableAndUpdateSwitch(uiSwitch: self.statusSwitchDepth, url: nil, topicNameDepth: self.topicNameDepthTextField.text, topicNamePointCloud: nil)
+            } else {
+                // Disable the right publisher
+                self.pubController?.disableDepth()
+            }
+            
+        case statusSwitchPointCloud:
+            if self.statusSwitchPointCloud.isOn {
+                self.enableAndUpdateSwitch(uiSwitch: self.statusSwitchPointCloud,url: nil, topicNameDepth: nil, topicNamePointCloud: self.topicNamePointCloudTextField.text)
+            } else {
+                // Disable the right publisher
+                self.pubController?.disablePointCloud()
+            }
+            
+        default:
+            break
         }
     }
     
-    private func enableAndUpdateSwitch(url: String?, topicName: String?) {
-        let enableResult = self.pubController?.enable(url: url, topicName: topicName)
+    private func enableAndUpdateSwitch(uiSwitch: UISwitch, url: String?, topicNameDepth: String?, topicNamePointCloud: String?) {
+        var result = true
+        if nil != topicNameDepth {
+            if self.pubController?.enableDepth(topicName: topicNameDepth!) ?? false {
+                self.statusSwitchDepth.setOn(true, animated: true)
+            } else {
+                result = false
+            }
+        }
+        if nil != topicNamePointCloud {
+            if self.pubController?.enablePointCloud(topicName: topicNamePointCloud!) ?? false {
+                self.statusSwitchPointCloud.setOn(true, animated: true)
+            } else {
+                result = false
+            }
+        }
+        let enableResult = self.pubController?.enable(url: url, topicNameDepth: topicNameDepth, topicNamePointCloud: topicNamePointCloud)
         if enableResult != nil {
-            self.statusSwitch.setOn(enableResult!, animated: true)
+            uiSwitch.setOn(enableResult! && result, animated: true)
         }
     }
     
