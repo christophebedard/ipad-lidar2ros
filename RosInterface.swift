@@ -87,7 +87,7 @@ final class RosInterface {
     /// - parameter topicName: the topic name
     /// - parameter type: the topic type
     /// - returns: the publisher if successful, `nil` otherwise
-    public func createPublisher(topicName: String, type: String) -> Publisher? {
+    public func createPublisher(topicName: String, type: Any) -> Publisher? {
         if nil != self.publishers[topicName] {
             self.logger.error("publisher already exists for topic: \(topicName)")
             return nil

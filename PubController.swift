@@ -19,8 +19,6 @@ protocol ViewWithPubController {
 /// TODO rename to "DepthPubController"
 final class PubController {
     private let logger = Logger(subsystem: "com.christophebedard.lidar2ros", category: "PubController")
-//    private let TOPIC_TYPE = "sensor_msgs/msg/Image"
-    private let TOPIC_TYPE = "sensor_msgs/msg/PointCloud2"
     
     private var url: String?
     
@@ -107,11 +105,11 @@ final class PubController {
         let currentTopic = self.pub?.getTopicName()
         if nil != topicName && currentTopic != topicName {
             // Replace publisher
-            self.logger.debug("replacing publisher: changing topic from \(currentTopic ?? "??") to \(topicName!)")
+            self.logger.debug("replacing publisher: changing topic from \(currentTopic ?? "(none)") to \(topicName!)")
             if nil != self.pub {
                 self.interface.destroyPublisher(pub: self.pub!)
             }
-            self.pub = self.interface.createPublisher(topicName: topicName!, type: self.TOPIC_TYPE)
+            self.pub = self.interface.createPublisher(topicName: topicName!, type: sensor_msgs__PointCloud2.self)
             if nil == self.pub {
                 return false
             }

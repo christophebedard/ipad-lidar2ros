@@ -25,13 +25,20 @@ final class Publisher {
     ///
     /// - parameter interface: the ROS interface to use
     /// - parameter topicName: the topic name
-    /// - parameter type: the topic type
-    init(interface: RosInterface, topicName: String, type: String) {
+    /// - parameter type: the type, as the message struct type
+    init(interface: RosInterface, topicName: String, type: Any) {
         self.interface = interface
         self.topicName = topicName
-        self.type = type
         self.isAdvertised = false
         self.counter = 0
+        self.type = ""
+        self.type = self.getMsgType(type)
+        self.logger.debug("type string: \(self.type)")
+    }
+    
+    /// Get message type string from message struct type.
+    private func getMsgType(_ type: Any) -> String {
+        return String(describing: type).replacingOccurrences(of: "__", with: "/msg/")
     }
     
     /// - returns: the topic name
@@ -83,7 +90,7 @@ final class Publisher {
     /// - parameter msg: the message to publish
     /// - returns: true if successful, false otherwise
     @discardableResult
-    public func publish<T>(_ msg: T) -> Bool where T : Encodable {
+    public func publish<T>(_ msg: T) -> Bool where T : RosMsg {
         if !self.isAdvertised && !self.advertise() {
             return false
         }
