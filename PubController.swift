@@ -72,7 +72,7 @@ final class PubController {
         
         if self.isEnabled {
             // TODO disable if publish fails?
-            self.pub?.publish(RosUtils.depthMapToImage(time: time, depth: depth))
+            self.pub?.publish(RosMessagesUtils.depthMapToImage(time: time, depth: depth))
         }
     }
     
