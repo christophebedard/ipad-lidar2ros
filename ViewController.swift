@@ -144,8 +144,12 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
         rosStackView.axis = .horizontal
         rosStackView.spacing = 10
         
+        let separator = UIView()
+        separator.heightAnchor.constraint(equalToConstant: 1).isActive = true
+        separator.backgroundColor = UIColor.init(white: 1.0, alpha: 0.5)
+        
         // Then stacked vertically
-        let stackView = UIStackView(arrangedSubviews: [rosStackView, confidenceControl, rgbRadiusSlider])
+        let stackView = UIStackView(arrangedSubviews: [rosStackView, separator, confidenceControl, rgbRadiusSlider])
         stackView.isHidden = !isUIEnabled
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
