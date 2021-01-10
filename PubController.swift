@@ -67,13 +67,12 @@ final class PubController {
     }
     
     /// Update and publish if enabled.
-    public func update(_ depth: CVPixelBuffer) {
-        // TODO take depth data
+    public func update(time: Double, depth: CVPixelBuffer, points: [vector_float3]) {
         self.logger.debug("update")
         
         if self.isEnabled {
             // TODO disable if publish fails?
-            self.pub?.publish(RosUtils.depthMapToImage(depth))
+            self.pub?.publish(RosUtils.depthMapToImage(time: time, depth: depth))
         }
     }
     

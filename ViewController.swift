@@ -134,15 +134,20 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
             stackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50)
         ])
         
-        Timer.scheduledTimer(timeInterval: 1.0/10.0, target: self, selector: #selector(updateDepth), userInfo: nil, repeats: true)
+        Timer.scheduledTimer(timeInterval: 1.0/10.0, target: self, selector: #selector(updatePub), userInfo: nil, repeats: true)
     }
     
     @objc
-    private func updateDepth() {
+    private func updatePub() {
         // TODO move to more appropriate place (non UI thread)
-        let depthMap = renderer.getDepthMap()
-        if nil != depthMap {
-            self.pubController?.update(depthMap!)
+        let currentFrame = session.currentFrame
+        if nil != currentFrame {
+            let timestamp = currentFrame!.timestamp
+            let depthMap = currentFrame!.sceneDepth?.depthMap
+            let pointCloud = currentFrame!.rawFeaturePoints?.points
+            if nil != depthMap && nil != pointCloud {
+                self.pubController?.update(time: timestamp, depth: depthMap!, points: pointCloud!)
+            }
         }
     }
     

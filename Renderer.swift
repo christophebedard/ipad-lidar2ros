@@ -55,12 +55,6 @@ final class Renderer {
                                                             array: makeGridPoints(),
                                                             index: kGridPoints.rawValue, options: [])
     
-    private var depthMap: CVPixelBuffer?
-    
-    public func getDepthMap() -> CVPixelBuffer? {
-        return depthMap
-    }
-    
     // RGB buffer
     private lazy var rgbUniforms: RGBUniforms = {
         var uniforms = RGBUniforms()
@@ -154,16 +148,6 @@ final class Renderer {
             let confidenceMap = frame.sceneDepth?.confidenceMap else {
                 return false
         }
-        
-        self.depthMap = depthMap
-        
-//        print(depthMap)
-
-//        // Convert the base address to a safe pointer of the appropriate type
-//        let byteBuffer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthMap), to: UnsafeMutablePointer<UInt8>.self)
-//        let bytesPerRow = CVPixelBufferGetBytesPerRowOfPlane(depthMap, 0)
-//        let middleByte = byteBuffer[(192/2) * bytesPerRow + 256/2]
-//        print(middleByte)
         
         depthTexture = makeTexture(fromPixelBuffer: depthMap, pixelFormat: .r32Float, planeIndex: 0)
         confidenceTexture = makeTexture(fromPixelBuffer: confidenceMap, pixelFormat: .r8Uint, planeIndex: 0)
