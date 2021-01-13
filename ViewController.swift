@@ -236,7 +236,7 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
         }
     }
     
-    private func updatePubTopic(uiSwitch: UISwitch, pubType: ControlledPubType, topicName: String) {
+    private func updatePubTopic(uiSwitch: UISwitch, pubType: PubController.PubType, topicName: String) {
         if self.pubController?.updatePubTopic(pubType: .depth, topicName: self.topicNameDepthTextField.text!) ?? false {
             uiSwitch.setOn(true, animated: true)
             self.updateTopicState(uiSwitch: uiSwitch, pubType: pubType, topicName: topicName)
@@ -247,7 +247,7 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
         }
     }
     
-    private func updateTopicState(uiSwitch: UISwitch, pubType: ControlledPubType, topicName: String) {
+    private func updateTopicState(uiSwitch: UISwitch, pubType: PubController.PubType, topicName: String) {
         if uiSwitch.isOn {
             // Enable publishing
             if self.pubController?.enablePub(pubType: pubType, topicName: topicName) ?? false {

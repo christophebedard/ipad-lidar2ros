@@ -15,37 +15,38 @@ protocol ViewWithPubController {
     func setPubController(pubController: PubController)
 }
 
-/// Type of controlled publication.
-enum ControlledPubType {
-    case depth
-    case pointCloud
-}
-
 /// Controller for publishing depth data.
 final class PubController {
+    /// Type of controlled publication.
+    public enum PubType {
+        case depth
+        case pointCloud
+    }
+    
     private let logger = Logger(subsystem: "com.christophebedard.lidar2ros", category: "PubController")
     
     private var url: String?
-    
     private var isEnabled: Bool = false
     private let interface = RosInterface()
-    
-    private var controlledPubs: [ControlledPubType: ControlledPublisher] = [:]
+    private var controlledPubs: [PubType: ControlledPublisher] = [:]
     
     init() {
         self.controlledPubs[.depth] = ControlledPublisher(interface: self.interface, type: sensor_msgs__Image.self)
         self.controlledPubs[.pointCloud] = ControlledPublisher(interface: self.interface, type: sensor_msgs__PointCloud2.self)
     }
     
-    /// Enable publisher.
+    /// Enable specific publisher.
     ///
     /// - parameter pubType: the type of the publisher to enable
     /// - parameter topicName: the topicName to use for the publisher
-    public func enablePub(pubType: ControlledPubType, topicName: String) -> Bool {
+    public func enablePub(pubType: PubType, topicName: String) -> Bool {
         return self.controlledPubs[pubType]?.enable(topicName: topicName) ?? false
     }
     
-    public func disablePub(pubType: ControlledPubType) {
+    /// Disable specific publisher.
+    ///
+    /// - parameter pubType: the type of the publisher to disable
+    public func disablePub(pubType: PubType) {
         self.controlledPubs[pubType]?.disable()
     }
     
@@ -53,7 +54,7 @@ final class PubController {
     ///
     /// - parameter topicName: the new topic name
     /// - returns: true if successful, false otherwise
-    public func updatePubTopic(pubType: ControlledPubType, topicName: String) -> Bool {
+    public func updatePubTopic(pubType: PubType, topicName: String) -> Bool {
         return self.controlledPubs[pubType]?.updateTopic(topicName: topicName) ?? false
     }
     
