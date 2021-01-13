@@ -21,7 +21,7 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
     // Global/connection
     private let urlTextField = UITextField()
     private let urlTextFieldLabel = UILabel()
-    private let statusSwitch = UISwitch()
+    private let masterSwitch = UISwitch()
     // Depth
     private let topicNameDepthTextField = UITextField()
     private let topicNameDepthTextFieldLabel = UILabel()
@@ -66,7 +66,7 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
         }
         
         // WebSocket URL field, label, and global switch
-        self.createLabelTextFieldSwitchViews(uiLabel: urlTextFieldLabel, uiTextField: urlTextField, uiStatusSwitch: statusSwitch, labelText: "Remote bridge", textFieldPlaceholder: "192.168.0.xyz:abcd")
+        self.createLabelTextFieldSwitchViews(uiLabel: urlTextFieldLabel, uiTextField: urlTextField, uiStatusSwitch: masterSwitch, labelText: "Remote bridge", textFieldPlaceholder: "192.168.0.xyz:abcd")
         // Depth topic name field, label, and switch
         self.createLabelTextFieldSwitchViews(uiLabel: topicNameDepthTextFieldLabel, uiTextField: topicNameDepthTextField, uiStatusSwitch: statusSwitchDepth, labelText: "Depth map", textFieldPlaceholder: "/topic_depth", useAsDefaultText: true)
         // Point cloud topic name field and label
@@ -75,7 +75,7 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
         // Stack with all the ROS config
         let labelsStackView = self.createVerticalStack(arrangedSubviews: [urlTextFieldLabel, topicNameDepthTextFieldLabel, topicNamePointCloudTextFieldLabel])
         let textFieldsStackView = self.createVerticalStack(arrangedSubviews: [urlTextField, topicNameDepthTextField, topicNamePointCloudTextField])
-        let statusSwitchesView = self.createVerticalStack(arrangedSubviews: [statusSwitch, statusSwitchDepth, statusSwitchPointCloud])
+        let statusSwitchesView = self.createVerticalStack(arrangedSubviews: [masterSwitch, statusSwitchDepth, statusSwitchPointCloud])
         let rosStackView = UIStackView(arrangedSubviews: [labelsStackView, textFieldsStackView, statusSwitchesView])
         rosStackView.isHidden = !isUIEnabled
         rosStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -183,13 +183,13 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
         case rgbRadiusSlider:
             renderer.rgbRadius = rgbRadiusSlider.value
             
-        case urlTextField:
+        case self.urlTextField:
             self.updateUrl()
             
         case self.topicNameDepthTextField:
             self.updatePubTopic(uiSwitch: self.statusSwitchDepth, pubType: .depth, topicName: self.topicNameDepthTextField.text!)
             
-        case topicNamePointCloudTextField:
+        case self.topicNamePointCloudTextField:
             self.updatePubTopic(uiSwitch: self.statusSwitchPointCloud, pubType: .pointCloud, topicName: self.topicNamePointCloudTextField.text!)
             
         default:
@@ -201,10 +201,10 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
     private func switchStatusChanged(view: UIView) {
         switch view {
             
-        case statusSwitch:
+        case self.masterSwitch:
             self.updateMasterSwitch()
             
-        case statusSwitchDepth:
+        case self.statusSwitchDepth:
             self.updateTopicState(uiSwitch: self.statusSwitchDepth, pubType: .depth, topicName: self.topicNameDepthTextField.text!)
             
         case self.statusSwitchPointCloud:
@@ -219,16 +219,16 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
         // Enable pub controller and/or update URL
         if self.pubController?.enable(url: self.urlTextField.text) ?? false {
             // It worked, so turn switch on
-            self.statusSwitch.setOn(true, animated: true)
+            self.masterSwitch.setOn(true, animated: true)
         } else {
             // It fails, so turn off switch and disable
-            self.statusSwitch.setOn(false, animated: true)
+            self.masterSwitch.setOn(false, animated: true)
             self.pubController?.disable()
         }
     }
     
     private func updateMasterSwitch() {
-        if self.statusSwitch.isOn {
+        if self.masterSwitch.isOn {
             self.updateUrl()
         } else {
             // Disable pub controller
@@ -252,8 +252,8 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
             // Enable publishing
             if self.pubController?.enablePub(pubType: pubType, topicName: topicName) ?? false {
                 // Enable master switch if not already enabled
-                if !self.statusSwitch.isOn {
-                    self.statusSwitch.setOn(true, animated: true)
+                if !self.masterSwitch.isOn {
+                    self.masterSwitch.setOn(true, animated: true)
                     self.updateMasterSwitch()
                 }
             } else {
