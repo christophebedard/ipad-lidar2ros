@@ -65,6 +65,28 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
             renderer.drawRectResized(size: view.bounds.size)
         }
         
+        // WebSocket URL field, label, and global switch
+        self.createLabelTextFieldSwitchViews(uiLabel: urlTextFieldLabel, uiTextField: urlTextField, uiStatusSwitch: statusSwitch, labelText: "Remote bridge", textFieldPlaceholder: "192.168.0.xyz:abcd")
+        // Depth topic name field, label, and switch
+        self.createLabelTextFieldSwitchViews(uiLabel: topicNameDepthTextFieldLabel, uiTextField: topicNameDepthTextField, uiStatusSwitch: statusSwitchDepth, labelText: "Depth map", textFieldPlaceholder: "/topic_depth", useAsDefaultText: true)
+        // Point cloud topic name field and label
+        self.createLabelTextFieldSwitchViews(uiLabel: topicNamePointCloudTextFieldLabel, uiTextField: topicNamePointCloudTextField, uiStatusSwitch: statusSwitchPointCloud, labelText: "Point cloud", textFieldPlaceholder: "/topic_pointcloud", useAsDefaultText: true)
+        
+        // Stack with all the ROS config
+        let labelsStackView = self.createVerticalStack(arrangedSubviews: [urlTextFieldLabel, topicNameDepthTextFieldLabel, topicNamePointCloudTextFieldLabel])
+        let textFieldsStackView = self.createVerticalStack(arrangedSubviews: [urlTextField, topicNameDepthTextField, topicNamePointCloudTextField])
+        let statusSwitchesView = self.createVerticalStack(arrangedSubviews: [statusSwitch, statusSwitchDepth, statusSwitchPointCloud])
+        let rosStackView = UIStackView(arrangedSubviews: [labelsStackView, textFieldsStackView, statusSwitchesView])
+        rosStackView.isHidden = !isUIEnabled
+        rosStackView.translatesAutoresizingMaskIntoConstraints = false
+        rosStackView.axis = .horizontal
+        rosStackView.spacing = 10
+        
+        // Horizontal separator
+        let separator = UIView()
+        separator.heightAnchor.constraint(equalToConstant: 1).isActive = true
+        separator.backgroundColor = UIColor.init(white: 1.0, alpha: 0.5)
+        
         // Confidence control
         confidenceControl.backgroundColor = .white
         confidenceControl.selectedSegmentIndex = renderer.confidenceThreshold
@@ -76,77 +98,6 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
         rgbRadiusSlider.isContinuous = true
         rgbRadiusSlider.value = renderer.rgbRadius
         rgbRadiusSlider.addTarget(self, action: #selector(viewValueChanged), for: .valueChanged)
-        
-        // WebSocket URL field, label, and global switch
-        urlTextField.borderStyle = UITextField.BorderStyle.bezel
-        urlTextField.clearButtonMode = UITextField.ViewMode.whileEditing
-        urlTextField.autocorrectionType = UITextAutocorrectionType.no
-        urlTextField.placeholder = "192.168.0.xyz:abcd"
-        urlTextField.addTarget(self, action: #selector(viewValueChanged), for: .editingDidEndOnExit)
-        
-        urlTextFieldLabel.attributedText = NSAttributedString(string: "Remote bridge")
-        
-        statusSwitch.preferredStyle = UISwitch.Style.checkbox
-        statusSwitch.addTarget(self, action: #selector(statusChanged), for: .valueChanged)
-        
-        // Depth topic name field, label, and switch
-        topicNameDepthTextField.borderStyle = UITextField.BorderStyle.bezel
-        topicNameDepthTextField.clearButtonMode = UITextField.ViewMode.whileEditing
-        topicNameDepthTextField.autocorrectionType = UITextAutocorrectionType.no
-        topicNameDepthTextField.placeholder = "/topic_depth"
-        topicNameDepthTextField.text = topicNameDepthTextField.placeholder
-        topicNameDepthTextField.addTarget(self, action: #selector(viewValueChanged), for: .editingDidEndOnExit)
-        
-        topicNameDepthTextFieldLabel.attributedText = NSAttributedString(string: "Depth map")
-        
-        statusSwitchDepth.preferredStyle = UISwitch.Style.checkbox
-        statusSwitchDepth.addTarget(self, action: #selector(statusChanged), for: .valueChanged)
-        
-        // Point cloud topic name field and label
-        topicNamePointCloudTextField.borderStyle = UITextField.BorderStyle.bezel
-        topicNamePointCloudTextField.clearButtonMode = UITextField.ViewMode.whileEditing
-        topicNamePointCloudTextField.autocorrectionType = UITextAutocorrectionType.no
-        topicNamePointCloudTextField.placeholder = "/topic_pointcloud"
-        topicNamePointCloudTextField.text = topicNamePointCloudTextField.placeholder
-        topicNamePointCloudTextField.addTarget(self, action: #selector(viewValueChanged), for: .editingDidEndOnExit)
-        
-        topicNamePointCloudTextFieldLabel.attributedText = NSAttributedString(string: "Point cloud")
-        
-        statusSwitchPointCloud.preferredStyle = UISwitch.Style.checkbox
-        statusSwitchPointCloud.addTarget(self, action: #selector(statusChanged), for: .valueChanged)
-        
-        // Stacks
-        let labelsStackView = UIStackView(arrangedSubviews: [urlTextFieldLabel, topicNameDepthTextFieldLabel, topicNamePointCloudTextFieldLabel])
-        labelsStackView.isHidden = !isUIEnabled
-        labelsStackView.translatesAutoresizingMaskIntoConstraints = false
-        labelsStackView.axis = .vertical
-        labelsStackView.spacing = 10
-        labelsStackView.alignment = UIStackView.Alignment.fill
-        labelsStackView.distribution = UIStackView.Distribution.fillEqually
-        let textFieldsStackView = UIStackView(arrangedSubviews: [urlTextField, topicNameDepthTextField, topicNamePointCloudTextField])
-        textFieldsStackView.isHidden = !isUIEnabled
-        textFieldsStackView.translatesAutoresizingMaskIntoConstraints = false
-        textFieldsStackView.axis = .vertical
-        textFieldsStackView.spacing = 10
-        textFieldsStackView.alignment = UIStackView.Alignment.fill
-        textFieldsStackView.distribution = UIStackView.Distribution.fillEqually
-        let statusSwitchesView = UIStackView(arrangedSubviews: [statusSwitch, statusSwitchDepth, statusSwitchPointCloud])
-        statusSwitchesView.isHidden = !isUIEnabled
-        statusSwitchesView.translatesAutoresizingMaskIntoConstraints = false
-        statusSwitchesView.spacing = 10
-        statusSwitchesView.axis = .vertical
-        statusSwitchesView.alignment = UIStackView.Alignment.center
-        statusSwitchesView.distribution = UIStackView.Distribution.fill
-        
-        let rosStackView = UIStackView(arrangedSubviews: [labelsStackView, textFieldsStackView, statusSwitchesView])
-        rosStackView.isHidden = !isUIEnabled
-        rosStackView.translatesAutoresizingMaskIntoConstraints = false
-        rosStackView.axis = .horizontal
-        rosStackView.spacing = 10
-        
-        let separator = UIView()
-        separator.heightAnchor.constraint(equalToConstant: 1).isActive = true
-        separator.backgroundColor = UIColor.init(white: 1.0, alpha: 0.5)
         
         // Then stacked vertically
         let stackView = UIStackView(arrangedSubviews: [rosStackView, separator, confidenceControl, rgbRadiusSlider])
@@ -161,6 +112,31 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
         ])
         
         Timer.scheduledTimer(timeInterval: 1.0/10.0, target: self, selector: #selector(updatePub), userInfo: nil, repeats: true)
+    }
+    
+    private func createLabelTextFieldSwitchViews(uiLabel: UILabel, uiTextField: UITextField, uiStatusSwitch: UISwitch, labelText: String, textFieldPlaceholder: String, useAsDefaultText: Bool = false) {
+        uiTextField.borderStyle = UITextField.BorderStyle.bezel
+        uiTextField.clearButtonMode = UITextField.ViewMode.whileEditing
+        uiTextField.autocorrectionType = UITextAutocorrectionType.no
+        uiTextField.placeholder = textFieldPlaceholder
+        if useAsDefaultText {
+            uiTextField.text = textFieldPlaceholder
+        }
+        uiTextField.addTarget(self, action: #selector(viewValueChanged), for: .editingDidEndOnExit)
+        uiLabel.attributedText = NSAttributedString(string: labelText)
+        uiStatusSwitch.preferredStyle = UISwitch.Style.checkbox
+        uiStatusSwitch.addTarget(self, action: #selector(statusChanged), for: .valueChanged)
+    }
+    
+    private func createVerticalStack(arrangedSubviews: [UIView]) -> UIStackView {
+        let stackView = UIStackView(arrangedSubviews: arrangedSubviews)
+        stackView.isHidden = !isUIEnabled
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .vertical
+        stackView.spacing = 10
+        stackView.alignment = UIStackView.Alignment.fill
+        stackView.distribution = UIStackView.Distribution.fillEqually
+        return stackView
     }
     
     @objc
