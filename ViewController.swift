@@ -251,12 +251,15 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
         if uiSwitch.isOn {
             // Enable publishing
             if self.pubController?.enablePub(pubType: pubType, topicName: topicName) ?? false {
-                uiSwitch.setOn(true, animated: true)
                 // Enable master switch if not already enabled
                 if !self.statusSwitch.isOn {
                     self.statusSwitch.setOn(true, animated: true)
                     self.updateMasterSwitch()
                 }
+            } else {
+                // Enabling failed, so disable and turn off switch
+                uiSwitch.setOn(false, animated: true)
+                self.pubController?.disablePub(pubType: pubType)
             }
         } else {
             // Disable publishing
