@@ -125,7 +125,7 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
         uiTextField.addTarget(self, action: #selector(viewValueChanged), for: .editingDidEndOnExit)
         uiLabel.attributedText = NSAttributedString(string: labelText)
         uiStatusSwitch.preferredStyle = UISwitch.Style.checkbox
-        uiStatusSwitch.addTarget(self, action: #selector(statusChanged), for: .valueChanged)
+        uiStatusSwitch.addTarget(self, action: #selector(switchStatusChanged), for: .valueChanged)
     }
     
     private func createVerticalStack(arrangedSubviews: [UIView]) -> UIStackView {
@@ -175,7 +175,6 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
     
     @objc
     private func viewValueChanged(view: UIView) {
-        
         switch view {
             
         case confidenceControl:
@@ -185,13 +184,13 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
             renderer.rgbRadius = rgbRadiusSlider.value
             
         case urlTextField:
-            self.enableAndUpdateSwitch(uiSwitch: self.statusSwitch, url: self.urlTextField.text, topicNameDepth: self.topicNameDepthTextField.text, topicNamePointCloud: self.topicNamePointCloudTextField.text)
+            self.updateUrl()
             
-        case topicNameDepthTextField:
-            self.enableAndUpdateSwitch(uiSwitch: self.statusSwitchDepth, url: nil, topicNameDepth: self.topicNameDepthTextField.text, topicNamePointCloud: nil)
+        case self.topicNameDepthTextField:
+            self.updatePubTopic(uiSwitch: self.statusSwitchDepth, pubType: .depth, topicName: self.topicNameDepthTextField.text!)
             
         case topicNamePointCloudTextField:
-            self.enableAndUpdateSwitch(uiSwitch: self.statusSwitchPointCloud, url: nil, topicNameDepth: nil, topicNamePointCloud: self.topicNamePointCloudTextField.text)
+            self.updatePubTopic(uiSwitch: self.statusSwitchPointCloud, pubType: .pointCloud, topicName: self.topicNamePointCloudTextField.text!)
             
         default:
             break
@@ -199,56 +198,69 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
     }
     
     @objc
-    private func statusChanged(view: UIView) {
+    private func switchStatusChanged(view: UIView) {
         switch view {
             
         case statusSwitch:
-            if self.statusSwitch.isOn {
-                self.enableAndUpdateSwitch(uiSwitch: self.statusSwitch, url: nil, topicNameDepth: self.topicNameDepthTextField.text, topicNamePointCloud: self.topicNamePointCloudTextField.text)
-            } else {
-                self.pubController?.disable()
-            }
+            self.updateMasterSwitch()
             
         case statusSwitchDepth:
-            if self.statusSwitchDepth.isOn {
-                self.enableAndUpdateSwitch(uiSwitch: self.statusSwitchDepth, url: nil, topicNameDepth: self.topicNameDepthTextField.text, topicNamePointCloud: nil)
-            } else {
-                // Disable the right publisher
-                self.pubController?.disableDepth()
-            }
+            self.updateTopicState(uiSwitch: self.statusSwitchDepth, pubType: .depth, topicName: self.topicNameDepthTextField.text!)
             
-        case statusSwitchPointCloud:
-            if self.statusSwitchPointCloud.isOn {
-                self.enableAndUpdateSwitch(uiSwitch: self.statusSwitchPointCloud,url: nil, topicNameDepth: nil, topicNamePointCloud: self.topicNamePointCloudTextField.text)
-            } else {
-                // Disable the right publisher
-                self.pubController?.disablePointCloud()
-            }
+        case self.statusSwitchPointCloud:
+            self.updateTopicState(uiSwitch: self.statusSwitchPointCloud, pubType: .pointCloud, topicName: self.topicNamePointCloudTextField.text!)
             
         default:
             break
         }
     }
     
-    private func enableAndUpdateSwitch(uiSwitch: UISwitch, url: String?, topicNameDepth: String?, topicNamePointCloud: String?) {
-        var result = true
-        if nil != topicNameDepth {
-            if self.pubController?.enableDepth(topicName: topicNameDepth!) ?? false {
-                self.statusSwitchDepth.setOn(true, animated: true)
-            } else {
-                result = false
-            }
+    private func updateUrl() {
+        // Enable pub controller and/or update URL
+        if self.pubController?.enable(url: self.urlTextField.text) ?? false {
+            // It worked, so turn switch on
+            self.statusSwitch.setOn(true, animated: true)
+        } else {
+            // It fails, so turn off switch and disable
+            self.statusSwitch.setOn(false, animated: true)
+            self.pubController?.disable()
         }
-        if nil != topicNamePointCloud {
-            if self.pubController?.enablePointCloud(topicName: topicNamePointCloud!) ?? false {
-                self.statusSwitchPointCloud.setOn(true, animated: true)
-            } else {
-                result = false
-            }
+    }
+    
+    private func updateMasterSwitch() {
+        if self.statusSwitch.isOn {
+            self.updateUrl()
+        } else {
+            // Disable pub controller
+            self.pubController?.disable()
         }
-        let enableResult = self.pubController?.enable(url: url, topicNameDepth: topicNameDepth, topicNamePointCloud: topicNamePointCloud)
-        if enableResult != nil {
-            uiSwitch.setOn(enableResult! && result, animated: true)
+    }
+    
+    private func updatePubTopic(uiSwitch: UISwitch, pubType: ControlledPubType, topicName: String) {
+        if self.pubController?.updatePubTopic(pubType: .depth, topicName: self.topicNameDepthTextField.text!) ?? false {
+            uiSwitch.setOn(true, animated: true)
+            self.updateTopicState(uiSwitch: uiSwitch, pubType: pubType, topicName: topicName)
+        } else {
+            // Disable pub and turn off switch
+            self.pubController?.disablePub(pubType: pubType)
+            uiSwitch.setOn(false, animated: true)
+        }
+    }
+    
+    private func updateTopicState(uiSwitch: UISwitch, pubType: ControlledPubType, topicName: String) {
+        if uiSwitch.isOn {
+            // Enable publishing
+            if self.pubController?.enablePub(pubType: pubType, topicName: topicName) ?? false {
+                uiSwitch.setOn(true, animated: true)
+                // Enable master switch if not already enabled
+                if !self.statusSwitch.isOn {
+                    self.statusSwitch.setOn(true, animated: true)
+                    self.updateMasterSwitch()
+                }
+            }
+        } else {
+            // Disable publishing
+            self.pubController?.disablePub(pubType: pubType)
         }
     }
     
