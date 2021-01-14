@@ -18,6 +18,8 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
     private let confidenceControl = UISegmentedControl(items: ["Low", "Medium", "High"])
     private let rgbRadiusSlider = UISlider()
     
+    // Help page button
+    private let helpPageButton = UIButton()
     // Global/connection
     private let urlTextField = UITextField()
     private let urlTextFieldLabel = UILabel()
@@ -65,6 +67,12 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
             renderer.drawRectResized(size: view.bounds.size)
         }
         
+        // Help page/message button
+        let helpIcon = UIImage(systemName: "questionmark.circle.fill", withConfiguration: UIImage.SymbolConfiguration(scale: .large))?.withTintColor(UIColor(white: 1.0, alpha: 0.5), renderingMode: .alwaysOriginal)
+        self.helpPageButton.setImage(helpIcon, for: .normal)
+        self.helpPageButton.addTarget(self, action: #selector(showHelp), for: .touchUpInside)
+        self.helpPageButton.translatesAutoresizingMaskIntoConstraints = false
+        
         // WebSocket URL field, label, and global switch
         self.createLabelTextFieldSwitchViews(uiLabel: urlTextFieldLabel, uiTextField: urlTextField, uiStatusSwitch: masterSwitch, labelText: "Remote bridge", textFieldPlaceholder: "192.168.0.xyz:abcd")
         // Depth topic name field, label, and switch
@@ -105,10 +113,16 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
         stackView.spacing = 20
+        
+        view.addSubview(helpPageButton)
         view.addSubview(stackView)
         NSLayoutConstraint.activate([
             stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             stackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50)
+        ])
+        NSLayoutConstraint.activate([
+            self.helpPageButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -30),
+            self.helpPageButton.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -30),
         ])
         
         Timer.scheduledTimer(timeInterval: 1.0/10.0, target: self, selector: #selector(updatePub), userInfo: nil, repeats: true)
@@ -137,6 +151,22 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
         stackView.alignment = UIStackView.Alignment.fill
         stackView.distribution = UIStackView.Distribution.fillEqually
         return stackView
+    }
+    
+    @objc func showHelp(sender: UIButton!) {
+        let helpAlertController = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
+        helpAlertController.title = "How to use"
+        helpAlertController.message = """
+This application sends messages to a rosbridge using the rosbridge v2.0 protocol.
+
+Launch a rosbridge on a computer accessible from this iPad through the network.
+Then set the remote bridge IP and port to point to it.
+
+See: https://github.com/RobotWebTools/ros2-web-bridge#install
+"""
+        let okAction = UIAlertAction(title: "got it!", style: .default)
+        helpAlertController.addAction(okAction)
+        self.present(helpAlertController, animated: true)
     }
     
     @objc
