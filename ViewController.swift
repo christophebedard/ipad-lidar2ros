@@ -153,7 +153,8 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
         return stackView
     }
     
-    @objc func showHelp(sender: UIButton!) {
+    @objc
+    func showHelp(sender: UIButton!) {
         let helpAlertController = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
         helpAlertController.title = "How to use"
         helpAlertController.message = """
@@ -161,11 +162,14 @@ This application sends messages to a rosbridge using the rosbridge v2.0 protocol
 
 Launch a rosbridge on a computer accessible from this iPad through the network.
 Then set the remote bridge IP and port to point to it.
-
-See: https://github.com/RobotWebTools/ros2-web-bridge#install
 """
-        let okAction = UIAlertAction(title: "got it!", style: .default)
-        helpAlertController.addAction(okAction)
+        let openLinkAction = UIAlertAction(title: "open rosbrige instructions", style: .default) { (action: UIAlertAction) in
+            let url = URLComponents(string: "https://github.com/RobotWebTools/ros2-web-bridge#install")!
+            UIApplication.shared.open(url.url!)
+        }
+        let closeAction = UIAlertAction(title: "close", style: .cancel)
+        helpAlertController.addAction(openLinkAction)
+        helpAlertController.addAction(closeAction)
         self.present(helpAlertController, animated: true)
     }
     
