@@ -22,17 +22,16 @@ struct RosbridgeMsg<T> : Encodable where T : Encodable {
 ///
 /// Handles websocket connection and sending data.
 final class RosInterface {
-    private let URL_REGEX = "^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:\\d{2,4}$"
+    private static let URL_REGEX = "^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:\\d{2,4}$"
     
     private var logger = Logger(subsystem: "com.christophebedard.lidar2ros", category: "RosInterface")
     
+    private let jsonEncoder: JSONEncoder = JSONEncoder()
     private var url: String?
     private var socket: URLSessionWebSocketTask?
     private var isConnected = false
     
     private var publishers: [String: Publisher] = [:]
-    
-    private let jsonEncoder: JSONEncoder = JSONEncoder()
     
     /// Connect.
     ///
@@ -48,7 +47,7 @@ final class RosInterface {
         }
         
         // Validate URL
-        if !RosInterface.matchesRegex(str: urlStr, regex: self.URL_REGEX) {
+        if !RosInterface.isValidUrl(urlStr) {
             self.logger.error("given URL does not match regex: \(urlStr)")
             return false
         }
@@ -112,12 +111,12 @@ final class RosInterface {
     ///
     /// - parameter pub: the publisher to destroy
     public func destroyPublisher(pub: Publisher) {
-        if nil == self.publishers[pub.getTopicName()] {
+        if nil == self.publishers[pub.topicName] {
             return
         }
         
         pub.unadvertise()
-        self.publishers.removeValue(forKey: pub.getTopicName())
+        self.publishers.removeValue(forKey: pub.topicName)
     }
     
     /// Send data.
@@ -160,6 +159,13 @@ final class RosInterface {
             print(error)
         }
         return nil
+    }
+    
+    /// Check if URL string is valid.
+    ///
+    /// - returns: true if valid, false otherwise
+    private static func isValidUrl(_ url: String) -> Bool {
+        return RosInterface.matchesRegex(str: url, regex: RosInterface.URL_REGEX)
     }
     
     /// Check if a string matches a regex.

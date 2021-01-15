@@ -47,6 +47,7 @@ final class RosMessagesUtils {
         return sensor_msgs__PointCloud2(header: header, height: height, width: width, fields: fields, is_bigendian: is_bigendian, point_step: point_step, row_step: row_step, data: data, is_dense: is_dense)
     }
     
+    /// Flatten array of float3.
     private static func flattenVectorFloat3Array(_ array: [vector_float3]) -> [UInt8] {
         return array.flatMap { $0.x.bytes + $0.y.bytes + $0.z.bytes }
     }
@@ -59,11 +60,12 @@ final class RosMessagesUtils {
         let encoding = "mono8"
         let is_bigendian = UInt8(0)
         let step = CVPixelBufferGetBytesPerRow(depthMap) / 4
-        let data = self.pixelBufferToArray(buffer: depthMap, width: width, height: height, bytesPerRow: step)
+        let data = self.depthPixelBufferToArray(buffer: depthMap, width: width, height: height, bytesPerRow: step)
         return sensor_msgs__Image(header: header, height: UInt32(height), width: UInt32(width), encoding: encoding, is_bigendian: is_bigendian, step: UInt32(step), data: data)
     }
     
-    private static func pixelBufferToArray(buffer: CVPixelBuffer, width: Int, height: Int, bytesPerRow: Int) -> [UInt8] {
+    /// Extract raw array of values from pixel buffer representing depth data.
+    private static func depthPixelBufferToArray(buffer: CVPixelBuffer, width: Int, height: Int, bytesPerRow: Int) -> [UInt8] {
         // Lock buffer
         CVPixelBufferLockBaseAddress(buffer, .readOnly)
         // Unlock buffer upon exiting

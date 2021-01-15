@@ -16,10 +16,13 @@ final class Publisher {
     private var logger = Logger(subsystem: "com.christophebedard.lidar2ros", category: "Publisher")
     
     private var interface: RosInterface
-    private var topicName: String
-    private var type: String
     private var isAdvertised: Bool
     private var counter: Int
+    
+    /// The name of the topic that the publisher publishes on.
+    public private(set) var topicName: String
+    /// The string representation of the publisher's message type.
+    public private(set) var type: String
     
     /// Create a publisher.
     ///
@@ -32,18 +35,18 @@ final class Publisher {
         self.isAdvertised = false
         self.counter = 0
         self.type = ""
-        self.type = self.getMsgType(type)
-        self.logger.debug("type string: \(self.type)")
+        self.type = Publisher.getMsgType(type)
     }
     
-    /// Get message type string from message struct type.
-    private func getMsgType(_ type: Any) -> String {
-        return String(describing: type).replacingOccurrences(of: "__", with: "/msg/")
-    }
-    
-    /// - returns: the topic name
-    public func getTopicName() -> String {
-        return self.topicName
+    /// Get message type string representation from message struct type.
+    ///
+    /// - parameter typeStruct: the type, as the message struct type
+    /// - returns: the ROS-compatible string representation of the type
+    private static func getMsgType(_ typeStruct: Any) -> String {
+        // Using '/msg/' between package name and message name with ROS 2 in mind
+        // TODO if this is what ends up making rosbridge work with only ROS 2,
+        // maybe add a switch to switch between ROS 1 and 2
+        return String(describing: typeStruct).replacingOccurrences(of: "__", with: "/msg/")
     }
     
     /// Advertise topic.

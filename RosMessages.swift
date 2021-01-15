@@ -11,16 +11,16 @@ import Foundation
 /// Generic ROS message, which is just an encodable object.
 typealias RosMsg = Encodable
 
-/// std_msgs/Header
-struct std_msgs__Header : RosMsg {
-    var stamp: builtin_interfaces__Time
-    var frame_id: String
-}
-
 /// builtin_interfaces/Time
 struct builtin_interfaces__Time : RosMsg {
     var sec: Int32
     var nanosec: UInt32
+}
+
+/// std_msgs/Header
+struct std_msgs__Header : RosMsg {
+    var stamp: builtin_interfaces__Time
+    var frame_id: String
 }
 
 /// sensor_msgs/Image

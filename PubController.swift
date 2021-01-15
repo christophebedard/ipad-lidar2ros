@@ -15,7 +15,7 @@ protocol ViewWithPubController {
     func setPubController(pubController: PubController)
 }
 
-/// Controller for publishing depth data.
+/// Publishing controller for all data.
 final class PubController {
     /// Type of controlled publication.
     public enum PubType {
@@ -31,6 +31,7 @@ final class PubController {
     private var controlledPubs: [PubType: ControlledPublisher] = [:]
     
     init() {
+        /// Create controlled pub objects for all publishers
         self.controlledPubs[.depth] = ControlledPublisher(interface: self.interface, type: sensor_msgs__Image.self)
         self.controlledPubs[.pointCloud] = ControlledPublisher(interface: self.interface, type: sensor_msgs__PointCloud2.self)
     }
@@ -66,7 +67,7 @@ final class PubController {
     public func enable(url: String?) -> Bool {
         self.logger.debug("enable")
         self.isEnabled = true
-        return self.updateConnection(url: url)
+        return self.updateConnection(url)
     }
     
     /// Resume state, and, if the controller is enabled, update the connection.
@@ -76,7 +77,7 @@ final class PubController {
     public func resume() -> Bool? {
         self.logger.debug("resume")
         if self.isEnabled {
-            return self.updateConnection(url: nil)
+            return self.updateConnection(nil)
         }
         return false
     }
@@ -109,9 +110,9 @@ final class PubController {
     ///
     /// If the connection fails, the controller is disabled.
     ///
-    /// - parameter url: the new URL to use, or `nil` to keep the current URL
+    /// - parameter url: the new URL to use, or `nil` to keep the current URL and just re-connect
     /// - returns: true if the connection update was successful, false otherwise
-    private func updateConnection(url: String?) -> Bool {
+    private func updateConnection(_ url: String?) -> Bool {
         self.logger.debug("updateConnection")
         if nil != url {
             self.url = url

@@ -43,7 +43,7 @@ final class ControlledPublisher {
     }
     
     public func updateTopic(topicName: String) -> Bool {
-        let currentTopic = self.pub?.getTopicName()
+        let currentTopic = self.pub?.topicName
         if currentTopic != topicName {
             // Replace publisher
             self.logger.debug("replacing publisher: changing topic from \(currentTopic ?? "(none)") to \(topicName)")
