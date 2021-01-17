@@ -76,9 +76,9 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
         // WebSocket URL field, label, and global switch
         self.createLabelTextFieldSwitchViews(uiLabel: urlTextFieldLabel, uiTextField: urlTextField, uiStatusSwitch: masterSwitch, labelText: "Remote bridge", textFieldPlaceholder: "192.168.0.xyz:abcd")
         // Depth topic name field, label, and switch
-        self.createLabelTextFieldSwitchViews(uiLabel: topicNameDepthTextFieldLabel, uiTextField: topicNameDepthTextField, uiStatusSwitch: statusSwitchDepth, labelText: "Depth map", textFieldPlaceholder: "/topic_depth", useAsDefaultText: true)
+        self.createLabelTextFieldSwitchViews(uiLabel: topicNameDepthTextFieldLabel, uiTextField: topicNameDepthTextField, uiStatusSwitch: statusSwitchDepth, labelText: "Depth map", textFieldPlaceholder: "/ipad/depth", useAsDefaultText: true)
         // Point cloud topic name field and label
-        self.createLabelTextFieldSwitchViews(uiLabel: topicNamePointCloudTextFieldLabel, uiTextField: topicNamePointCloudTextField, uiStatusSwitch: statusSwitchPointCloud, labelText: "Point cloud", textFieldPlaceholder: "/topic_pointcloud", useAsDefaultText: true)
+        self.createLabelTextFieldSwitchViews(uiLabel: topicNamePointCloudTextFieldLabel, uiTextField: topicNamePointCloudTextField, uiStatusSwitch: statusSwitchPointCloud, labelText: "Point cloud", textFieldPlaceholder: "/ipad/pointcloud", useAsDefaultText: true)
         
         // Stack with all the ROS config
         let labelsStackView = self.createVerticalStack(arrangedSubviews: [urlTextFieldLabel, topicNameDepthTextFieldLabel, topicNamePointCloudTextFieldLabel])
