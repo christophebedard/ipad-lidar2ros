@@ -9,11 +9,12 @@
 import Foundation
 import ARKit
 
-/// Conversion from Float to array of bytes ([UInt8]).
+/// Utilities.
 extension Float {
-   var bytes: [UInt8] {
-       withUnsafeBytes(of: self, Array.init)
-   }
+    /// Conversion from Float to array of bytes ([UInt8]).
+    var bytes: [UInt8] {
+        withUnsafeBytes(of: self, Array.init)
+    }
 }
 
 /// Utilities for dealing with and creating messages.
@@ -28,7 +29,7 @@ final class RosMessagesUtils {
     
     /// Get sensor_msgs/PointCloud2 message from time and points.
     public static func pointsToPointCloud2(time: Double, points: [vector_float3]) -> sensor_msgs__PointCloud2 {
-        let header = std_msgs__Header(stamp: self.getTimestamp(time), frame_id: "world")
+        let header = std_msgs__Header(stamp: self.getTimestamp(time), frame_id: "ipad")
         // Unordered point cloud: width * height = count * 1
         let height = UInt32(1)
         let width = UInt32(points.count)
@@ -54,7 +55,7 @@ final class RosMessagesUtils {
     
     /// Get sensor_msgs/Image message from time and depth map.
     public static func depthMapToImage(time: Double, depthMap: CVPixelBuffer) -> sensor_msgs__Image {
-        let header = std_msgs__Header(stamp: self.getTimestamp(time), frame_id: "world")
+        let header = std_msgs__Header(stamp: self.getTimestamp(time), frame_id: "ipad")
         let width = CVPixelBufferGetWidth(depthMap)
         let height = CVPixelBufferGetHeight(depthMap)
         let encoding = "mono8"
@@ -84,5 +85,36 @@ final class RosMessagesUtils {
             }
         }
         return imgArray
+    }
+    
+    /// Get TFMessage message from camera tf.
+    public static func tfToTfMsg(time: Double, tf: simd_float4x4) -> tf2_msgs__TFMessage {
+        let arkitRef = self.getARKitReference()
+        let tfArkitRef = self.transformStampedFromTf(arkitRef, time: time, frame_id: "map_ipad", child_frame_id: "arkit_ref")
+        let tfCamera = self.transformStampedFromTf(tf, time: time, frame_id: "arkit_ref", child_frame_id: "ipad_camera")
+        let tfIpad = self.transformStampedFromTf(arkitRef.inverse, time: time, frame_id: "ipad_camera", child_frame_id: "ipad")
+        return tf2_msgs__TFMessage(transforms: [tfArkitRef, tfCamera, tfIpad])
+    }
+    
+    /// Get TransformStamped message given various parameters.
+    private static func transformStampedFromTf(_ tf: simd_float4x4, time: Double, frame_id: String, child_frame_id: String) -> geometry_msgs__TransformStamped {
+        let quatf = simd_quaternion(tf)
+        let translation = tf.columns.3
+        let header = std_msgs__Header(stamp: self.getTimestamp(time), frame_id: frame_id)
+        let translationMsg = geometry_msgs__Vector3(x: Float64(translation.x), y: Float64(translation.y), z: Float64(translation.z))
+        let roationMsg = geometry_msgs__Quaternion(x: Float64(quatf.vector.x), y: Float64(quatf.vector.y), z: Float64(quatf.vector.z), w: Float64(quatf.vector.w))
+        let tfMsg = geometry_msgs__Transform(translation: translationMsg, rotation: roationMsg)
+        return geometry_msgs__TransformStamped(header: header, child_frame_id: child_frame_id, transform: tfMsg)
+    }
+    
+    /// Get transform for ARKit coordinate system in normal ROS coordinate system.
+    public static func getARKitReference() -> simd_float4x4 {
+        // ARKit Gravity reference wrt normal ROS coordinates:
+        //   Y up (-gravity), Z backward (out from screen/front camera)
+        // Note here that according to the documentation, Z should point out from the camera,
+        // but this does not seem to be the case with the camera used for AR (back camera)
+        let rotZ = matrix_float4x4(simd_quaternion(-90.0 * Float.degreesToRadian, Float3(0, 0, 1)))
+        let rotY = matrix_float4x4(simd_quaternion(-90.0 * Float.degreesToRadian, Float3(0, 1, 0)))
+        return rotY * rotZ
     }
 }

@@ -181,8 +181,9 @@ Then set the remote bridge IP and port to point to it.
             let timestamp = currentFrame!.timestamp
             let depthMap = currentFrame!.sceneDepth?.depthMap
             let pointCloud = currentFrame!.rawFeaturePoints?.points
+            let cameraTf = currentFrame!.camera.transform
             if nil != depthMap && nil != pointCloud {
-                self.pubController?.update(time: timestamp, depthMap: depthMap!, points: pointCloud!)
+                self.pubController?.update(time: timestamp, depthMap: depthMap!, points: pointCloud!, cameraTf: cameraTf)
             }
         }
     }

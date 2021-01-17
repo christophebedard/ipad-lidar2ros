@@ -68,3 +68,36 @@ struct sensor_msgs__PointCloud2 : RosMsg {
     var data: [UInt8]
     var is_dense: Bool
 }
+
+/// geometry_msgs/Vector3
+struct geometry_msgs__Vector3 : RosMsg {
+    var x: Float64
+    var y: Float64
+    var z: Float64
+}
+
+/// geometry_msgs/Quaternion
+struct geometry_msgs__Quaternion : RosMsg {
+    var x: Float64
+    var y: Float64
+    var z: Float64
+    var w: Float64
+}
+
+/// geometry_msgs/Transform
+struct geometry_msgs__Transform : RosMsg {
+    var translation: geometry_msgs__Vector3
+    var rotation: geometry_msgs__Quaternion
+}
+
+/// geometry_msgs/TransformStamped
+struct geometry_msgs__TransformStamped : RosMsg {
+    var header: std_msgs__Header
+    var child_frame_id: String
+    var transform: geometry_msgs__Transform
+}
+
+/// tf2_msgs/TFMessage
+struct tf2_msgs__TFMessage : RosMsg {
+    var transforms: [geometry_msgs__TransformStamped]
+}
