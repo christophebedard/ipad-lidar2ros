@@ -55,7 +55,7 @@ final class RosMessagesUtils {
     
     /// Get sensor_msgs/Image message from time and depth map.
     public static func depthMapToImage(time: Double, depthMap: CVPixelBuffer) -> sensor_msgs__Image {
-        let header = std_msgs__Header(stamp: self.getTimestamp(time), frame_id: "ipad")
+        let header = std_msgs__Header(stamp: self.getTimestamp(time), frame_id: "ipad_camera")
         let width = CVPixelBufferGetWidth(depthMap)
         let height = CVPixelBufferGetHeight(depthMap)
         let encoding = "mono8"
