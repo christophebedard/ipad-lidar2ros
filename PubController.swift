@@ -35,9 +35,8 @@ final class PubController {
         /// Create controlled pub objects for all publishers
         self.controlledPubs[.depth] = ControlledPublisher(interface: self.interface, type: sensor_msgs__Image.self)
         self.controlledPubs[.pointCloud] = ControlledPublisher(interface: self.interface, type: sensor_msgs__PointCloud2.self)
+        // TODO create separate pub for /tf_static
         self.controlledPubs[.transforms] = ControlledStaticPublisher(interface: self.interface, type: tf2_msgs__TFMessage.self, topicName: "/tf")
-        
-        _ = self.controlledPubs[.transforms]?.enable()
     }
     
     /// Enable specific publisher.

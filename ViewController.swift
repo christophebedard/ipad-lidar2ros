@@ -32,6 +32,9 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
     private let topicNamePointCloudTextField = UITextField()
     private let topicNamePointCloudTextFieldLabel = UILabel()
     private let statusSwitchPointCloud = UISwitch()
+    // Transforms
+    private let transformsLabel = UILabel()
+    private let transformsSwitch = UISwitch()
     
     private let session = ARSession()
     private var renderer: Renderer!
@@ -79,11 +82,13 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
         self.createLabelTextFieldSwitchViews(uiLabel: topicNameDepthTextFieldLabel, uiTextField: topicNameDepthTextField, uiStatusSwitch: statusSwitchDepth, labelText: "Depth map", textFieldPlaceholder: "/ipad/depth", useAsDefaultText: true)
         // Point cloud topic name field and label
         self.createLabelTextFieldSwitchViews(uiLabel: topicNamePointCloudTextFieldLabel, uiTextField: topicNamePointCloudTextField, uiStatusSwitch: statusSwitchPointCloud, labelText: "Point cloud", textFieldPlaceholder: "/ipad/pointcloud", useAsDefaultText: true)
+        // Transforms
+        self.createLabelTextFieldSwitchViews(uiLabel: transformsLabel, uiTextField: nil, uiStatusSwitch: transformsSwitch, labelText: "Transforms", textFieldPlaceholder: nil)
         
         // Stack with all the ROS config
-        let labelsStackView = self.createVerticalStack(arrangedSubviews: [urlTextFieldLabel, topicNameDepthTextFieldLabel, topicNamePointCloudTextFieldLabel])
-        let textFieldsStackView = self.createVerticalStack(arrangedSubviews: [urlTextField, topicNameDepthTextField, topicNamePointCloudTextField])
-        let statusSwitchesView = self.createVerticalStack(arrangedSubviews: [masterSwitch, statusSwitchDepth, statusSwitchPointCloud])
+        let labelsStackView = self.createVerticalStack(arrangedSubviews: [urlTextFieldLabel, topicNameDepthTextFieldLabel, topicNamePointCloudTextFieldLabel, transformsLabel])
+        let textFieldsStackView = self.createVerticalStack(arrangedSubviews: [urlTextField, topicNameDepthTextField, topicNamePointCloudTextField, UIView()])
+        let statusSwitchesView = self.createVerticalStack(arrangedSubviews: [masterSwitch, statusSwitchDepth, statusSwitchPointCloud, transformsSwitch])
         let rosStackView = UIStackView(arrangedSubviews: [labelsStackView, textFieldsStackView, statusSwitchesView])
         rosStackView.isHidden = !isUIEnabled
         rosStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -128,15 +133,19 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
         Timer.scheduledTimer(timeInterval: 1.0/10.0, target: self, selector: #selector(updatePub), userInfo: nil, repeats: true)
     }
     
-    private func createLabelTextFieldSwitchViews(uiLabel: UILabel, uiTextField: UITextField, uiStatusSwitch: UISwitch, labelText: String, textFieldPlaceholder: String, useAsDefaultText: Bool = false) {
-        uiTextField.borderStyle = UITextField.BorderStyle.bezel
-        uiTextField.clearButtonMode = UITextField.ViewMode.whileEditing
-        uiTextField.autocorrectionType = UITextAutocorrectionType.no
-        uiTextField.placeholder = textFieldPlaceholder
-        if useAsDefaultText {
-            uiTextField.text = textFieldPlaceholder
+    private func createLabelTextFieldSwitchViews(uiLabel: UILabel, uiTextField: UITextField?, uiStatusSwitch: UISwitch, labelText: String, textFieldPlaceholder: String?, useAsDefaultText: Bool = false) {
+        if nil != uiTextField {
+            uiTextField!.borderStyle = UITextField.BorderStyle.bezel
+            uiTextField!.clearButtonMode = UITextField.ViewMode.whileEditing
+            uiTextField!.autocorrectionType = UITextAutocorrectionType.no
+            if nil != textFieldPlaceholder {
+                uiTextField!.placeholder = textFieldPlaceholder
+                if useAsDefaultText {
+                    uiTextField!.text = textFieldPlaceholder
+                }
+            }
+            uiTextField!.addTarget(self, action: #selector(viewValueChanged), for: .editingDidEndOnExit)
         }
-        uiTextField.addTarget(self, action: #selector(viewValueChanged), for: .editingDidEndOnExit)
         uiLabel.attributedText = NSAttributedString(string: labelText)
         uiStatusSwitch.preferredStyle = UISwitch.Style.checkbox
         uiStatusSwitch.addTarget(self, action: #selector(switchStatusChanged), for: .valueChanged)
@@ -244,6 +253,9 @@ Then set the remote bridge IP and port to point to it.
             
         case self.statusSwitchPointCloud:
             self.updateTopicState(uiSwitch: self.statusSwitchPointCloud, pubType: .pointCloud, topicName: self.topicNamePointCloudTextField.text!)
+            
+        case self.transformsSwitch:
+            self.updateTopicState(uiSwitch: self.transformsSwitch, pubType: .transforms, topicName: nil)
             
         default:
             break
