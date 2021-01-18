@@ -10,7 +10,7 @@ import Foundation
 import OSLog
 
 /// Managed publisher that can be enabled/disabled and for which we can change the topic.
-final class ControlledPublisher {
+class ControlledPublisher {
     private var logger = Logger(subsystem: "com.christophebedard.lidar2ros", category: "ControlledPublisher")
     
     private var isEnabled: Bool = false
@@ -23,7 +23,7 @@ final class ControlledPublisher {
         self.type = type
     }
     
-    public func enable(topicName: String) -> Bool {
+    public func enable(topicName: String? = nil) -> Bool {
         self.logger.debug("enable")
         self.isEnabled = true
         return self.updateTopic(topicName: topicName)
@@ -42,15 +42,18 @@ final class ControlledPublisher {
         return self.pub?.publish(msg) ?? true
     }
     
-    public func updateTopic(topicName: String) -> Bool {
+    public func updateTopic(topicName: String? = nil) -> Bool {
+        if nil == topicName {
+            return false
+        }
         let currentTopic = self.pub?.topicName
         if currentTopic != topicName {
             // Replace publisher
-            self.logger.debug("replacing publisher: changing topic from \(currentTopic ?? "(none)") to \(topicName)")
+            self.logger.debug("replacing publisher: changing topic from \(currentTopic ?? "(none)") to \(topicName!)")
             if nil != self.pub {
                 self.interface.destroyPublisher(pub: self.pub!)
             }
-            self.pub = self.interface.createPublisher(topicName: topicName, type: self.type)
+            self.pub = self.interface.createPublisher(topicName: topicName!, type: self.type)
             if nil == self.pub {
                 return false
             }

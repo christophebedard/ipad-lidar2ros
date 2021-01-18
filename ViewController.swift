@@ -271,7 +271,7 @@ Then set the remote bridge IP and port to point to it.
         }
     }
     
-    private func updatePubTopic(uiSwitch: UISwitch, pubType: PubController.PubType, topicName: String) {
+    private func updatePubTopic(uiSwitch: UISwitch, pubType: PubController.PubType, topicName: String?) {
         if self.pubController?.updatePubTopic(pubType: .depth, topicName: self.topicNameDepthTextField.text!) ?? false {
             uiSwitch.setOn(true, animated: true)
             self.updateTopicState(uiSwitch: uiSwitch, pubType: pubType, topicName: topicName)
@@ -282,7 +282,7 @@ Then set the remote bridge IP and port to point to it.
         }
     }
     
-    private func updateTopicState(uiSwitch: UISwitch, pubType: PubController.PubType, topicName: String) {
+    private func updateTopicState(uiSwitch: UISwitch, pubType: PubController.PubType, topicName: String?) {
         if uiSwitch.isOn {
             // Enable publishing
             if self.pubController?.enablePub(pubType: pubType, topicName: topicName) ?? false {

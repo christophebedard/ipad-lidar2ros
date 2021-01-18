@@ -21,7 +21,7 @@ final class PubController {
     public enum PubType {
         case depth
         case pointCloud
-        case cameraTf
+        case transforms
     }
     
     private let logger = Logger(subsystem: "com.christophebedard.lidar2ros", category: "PubController")
@@ -35,16 +35,16 @@ final class PubController {
         /// Create controlled pub objects for all publishers
         self.controlledPubs[.depth] = ControlledPublisher(interface: self.interface, type: sensor_msgs__Image.self)
         self.controlledPubs[.pointCloud] = ControlledPublisher(interface: self.interface, type: sensor_msgs__PointCloud2.self)
-        self.controlledPubs[.cameraTf] = ControlledPublisher(interface: self.interface, type: tf2_msgs__TFMessage.self)
+        self.controlledPubs[.transforms] = ControlledStaticPublisher(interface: self.interface, type: tf2_msgs__TFMessage.self, topicName: "/tf")
         
-        _ = self.controlledPubs[.cameraTf]?.enable(topicName: "/tf")
+        _ = self.controlledPubs[.transforms]?.enable()
     }
     
     /// Enable specific publisher.
     ///
     /// - parameter pubType: the type of the publisher to enable
     /// - parameter topicName: the topicName to use for the publisher
-    public func enablePub(pubType: PubType, topicName: String) -> Bool {
+    public func enablePub(pubType: PubType, topicName: String?) -> Bool {
         return self.controlledPubs[pubType]?.enable(topicName: topicName) ?? false
     }
     
@@ -59,7 +59,7 @@ final class PubController {
     ///
     /// - parameter topicName: the new topic name
     /// - returns: true if successful, false otherwise
-    public func updatePubTopic(pubType: PubType, topicName: String) -> Bool {
+    public func updatePubTopic(pubType: PubType, topicName: String?) -> Bool {
         return self.controlledPubs[pubType]?.updateTopic(topicName: topicName) ?? false
     }
     
@@ -107,7 +107,7 @@ final class PubController {
             // TODO disable if publish fails?
             self.controlledPubs[.depth]?.publish(RosMessagesUtils.depthMapToImage(time: time, depthMap: depthMap))
             self.controlledPubs[.pointCloud]?.publish(RosMessagesUtils.pointsToPointCloud2(time: time, points: points))
-            self.controlledPubs[.cameraTf]?.publish(RosMessagesUtils.tfToTfMsg(time: time, tf: cameraTf))
+            self.controlledPubs[.transforms]?.publish(RosMessagesUtils.tfToTfMsg(time: time, tf: cameraTf))
         }
     }
     
