@@ -28,6 +28,7 @@ final class PubController {
         case depth
         case pointCloud
         case transforms
+        case camera
     }
     
     private let logger = Logger(subsystem: "com.christophebedard.lidar2ros", category: "PubController")
@@ -43,6 +44,7 @@ final class PubController {
         self.controlledPubs[.pointCloud] = ControlledPublisher(interface: self.interface, type: sensor_msgs__PointCloud2.self)
         // TODO create separate pub for /tf_static
         self.controlledPubs[.transforms] = ControlledStaticPublisher(interface: self.interface, type: tf2_msgs__TFMessage.self, topicName: "/tf")
+        self.controlledPubs[.camera] = ControlledPublisher(interface: self.interface, type: sensor_msgs__Image.self)
     }
     
     /// Enable specific publisher.
@@ -105,7 +107,7 @@ final class PubController {
     }
     
     /// Update and publish if enabled.
-    public func update(time: Double, depthMap: CVPixelBuffer, points: [vector_float3], cameraTf: simd_float4x4) {
+    public func update(time: Double, depthMap: CVPixelBuffer, points: [vector_float3], cameraTf: simd_float4x4, cameraImage: CVPixelBuffer) {
         self.logger.debug("update")
         
         if self.isEnabled {
@@ -113,6 +115,8 @@ final class PubController {
             self.controlledPubs[.depth]?.publish(RosMessagesUtils.depthMapToImage(time: time, depthMap: depthMap))
             self.controlledPubs[.pointCloud]?.publish(RosMessagesUtils.pointsToPointCloud2(time: time, points: points))
             self.controlledPubs[.transforms]?.publish(RosMessagesUtils.tfToTfMsg(time: time, tf: cameraTf))
+            // TODO implement
+            // self.controlledPubs[.camera]?.publish(RosMessagesUtils.pixelBufferToImage(time: time, pixelBuffer: cameraImage))
         }
     }
     

@@ -35,6 +35,10 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
     // Transforms
     private let transformsLabel = UILabel()
     private let transformsSwitch = UISwitch()
+    // Camera image
+    private let topicNameCameraImageTextField = UITextField()
+    private let topicNameCameraImageTextFieldLabel = UILabel()
+    private let statusSwitchCameraImage = UISwitch()
     
     private let session = ARSession()
     private var renderer: Renderer!
@@ -84,11 +88,13 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
         self.createLabelTextFieldSwitchViews(uiLabel: topicNamePointCloudTextFieldLabel, uiTextField: topicNamePointCloudTextField, uiStatusSwitch: statusSwitchPointCloud, labelText: "Point cloud", textFieldPlaceholder: "/ipad/pointcloud", useAsDefaultText: true)
         // Transforms
         self.createLabelTextFieldSwitchViews(uiLabel: transformsLabel, uiTextField: nil, uiStatusSwitch: transformsSwitch, labelText: "Transforms", textFieldPlaceholder: nil)
+        // Camera image topic name field, label, and switch
+        self.createLabelTextFieldSwitchViews(uiLabel: topicNameCameraImageTextFieldLabel, uiTextField: topicNameCameraImageTextField, uiStatusSwitch: statusSwitchCameraImage, labelText: "Camera", textFieldPlaceholder: "/ipad/camera", useAsDefaultText: true)
         
         // Stack with all the ROS config
-        let labelsStackView = self.createVerticalStack(arrangedSubviews: [urlTextFieldLabel, topicNameDepthTextFieldLabel, topicNamePointCloudTextFieldLabel, transformsLabel])
-        let textFieldsStackView = self.createVerticalStack(arrangedSubviews: [urlTextField, topicNameDepthTextField, topicNamePointCloudTextField, UIView()])
-        let statusSwitchesView = self.createVerticalStack(arrangedSubviews: [masterSwitch, statusSwitchDepth, statusSwitchPointCloud, transformsSwitch])
+        let labelsStackView = self.createVerticalStack(arrangedSubviews: [urlTextFieldLabel, topicNameDepthTextFieldLabel, topicNamePointCloudTextFieldLabel, transformsLabel, topicNameCameraImageTextFieldLabel])
+        let textFieldsStackView = self.createVerticalStack(arrangedSubviews: [urlTextField, topicNameDepthTextField, topicNamePointCloudTextField, UIView(), topicNameCameraImageTextField])
+        let statusSwitchesView = self.createVerticalStack(arrangedSubviews: [masterSwitch, statusSwitchDepth, statusSwitchPointCloud, transformsSwitch, statusSwitchCameraImage])
         let rosStackView = UIStackView(arrangedSubviews: [labelsStackView, textFieldsStackView, statusSwitchesView])
         rosStackView.isHidden = !isUIEnabled
         rosStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -191,8 +197,9 @@ Then set the remote bridge IP and port to point to it.
             let depthMap = currentFrame!.sceneDepth?.depthMap
             let pointCloud = currentFrame!.rawFeaturePoints?.points
             let cameraTf = currentFrame!.camera.transform
+            let cameraImage = currentFrame!.capturedImage
             if nil != depthMap && nil != pointCloud {
-                self.pubController?.update(time: timestamp, depthMap: depthMap!, points: pointCloud!, cameraTf: cameraTf)
+                self.pubController?.update(time: timestamp, depthMap: depthMap!, points: pointCloud!, cameraTf: cameraTf, cameraImage: cameraImage)
             }
         }
     }
@@ -236,6 +243,9 @@ Then set the remote bridge IP and port to point to it.
         case self.topicNamePointCloudTextField:
             self.updatePubTopic(uiSwitch: self.statusSwitchPointCloud, pubType: .pointCloud, topicName: self.topicNamePointCloudTextField.text!)
             
+        case self.topicNameCameraImageTextField:
+            self.updatePubTopic(uiSwitch: self.statusSwitchCameraImage, pubType: .camera, topicName: self.topicNameCameraImageTextField.text!)
+            
         default:
             break
         }
@@ -256,6 +266,9 @@ Then set the remote bridge IP and port to point to it.
             
         case self.transformsSwitch:
             self.updateTopicState(uiSwitch: self.transformsSwitch, pubType: .transforms, topicName: nil)
+            
+        case self.statusSwitchCameraImage:
+            self.updateTopicState(uiSwitch: self.statusSwitchCameraImage, pubType: .camera, topicName: self.topicNameCameraImageTextField.text!)
             
         default:
             break
