@@ -1,49 +1,41 @@
 {
   "images" : [
     {
-      "filename" : "AR_icon_basic copy-6.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "20x20"
     },
     {
-      "filename" : "AR_icon_basic copy-16.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "20x20"
     },
     {
-      "filename" : "AR_icon_basic copy-9.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "29x29"
     },
     {
-      "filename" : "AR_icon_basic copy-10.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "29x29"
     },
     {
-      "filename" : "AR_icon_basic copy-4.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "40x40"
     },
     {
-      "filename" : "AR_icon_basic copy-12.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "40x40"
     },
     {
-      "filename" : "AR_icon_basic copy-13.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "60x60"
     },
     {
-      "filename" : "AR_icon_basic copy-14.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "60x60"
