@@ -66,8 +66,9 @@ final class RosMessagesUtils {
         let height = CVPixelBufferGetHeight(depthMap)
         let encoding = sensor_msgs__Image.MONO8
         let is_bigendian = UInt8(0)
-        let step = CVPixelBufferGetBytesPerRow(depthMap) / 4
-        let data = self.depthPixelBufferToArray(buffer: depthMap, width: width, height: height, bytesPerRow: step)
+        let bytesPerRow = CVPixelBufferGetBytesPerRow(depthMap)
+        let step = bytesPerRow / 4
+        let data = self.depthPixelBufferToArray(buffer: depthMap, width: width, height: height, bytesPerRow: bytesPerRow)
         return sensor_msgs__Image(header: header, height: UInt32(height), width: UInt32(width), encoding: encoding, is_bigendian: is_bigendian, step: UInt32(step), data: data)
     }
     
@@ -85,7 +86,7 @@ final class RosMessagesUtils {
             let buffer = baseAddress.assumingMemoryBound(to: UInt8.self)
             for y in (0..<height) {
                 for x in (0..<width) {
-                    let ix = y * bytesPerRow * 4 + x * 4
+                    let ix = y * bytesPerRow + x * 4
                     imgArray.append(buffer[ix + 2])
                 }
             }
