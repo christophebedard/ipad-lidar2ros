@@ -1,3 +1,5 @@
+MIT License
+
 Copyright © 2020 Apple Inc.
 Copyright © 2021 Christophe Bedard
 
