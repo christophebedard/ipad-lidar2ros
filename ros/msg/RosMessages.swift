@@ -38,6 +38,17 @@ struct sensor_msgs__Image : RosMsg {
     var is_bigendian: UInt8
     var step: UInt32
     var data: [UInt8]
+    
+    static let RGB8: String = "rgb8"
+    static let RGBA8: String = "rgba8"
+    static let RGB16: String = "rgb16"
+    static let RGBA16: String = "rgba16"
+    static let BGR8: String = "bgr8"
+    static let BGRA8: String = "bgra8"
+    static let BGR16: String = "bgr16"
+    static let BGRA16: String = "bgra16"
+    static let MONO8: String = "mono8"
+    static let MONO16: String = "mono16"
 }
 
 /// std_msgs/String

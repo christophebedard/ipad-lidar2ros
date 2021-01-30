@@ -64,7 +64,7 @@ final class RosMessagesUtils {
         let header = std_msgs__Header(stamp: self.getTimestamp(time), frame_id: "ipad_camera")
         let width = CVPixelBufferGetWidth(depthMap)
         let height = CVPixelBufferGetHeight(depthMap)
-        let encoding = "mono8"
+        let encoding = sensor_msgs__Image.MONO8
         let is_bigendian = UInt8(0)
         let step = CVPixelBufferGetBytesPerRow(depthMap) / 4
         let data = self.depthPixelBufferToArray(buffer: depthMap, width: width, height: height, bytesPerRow: step)
