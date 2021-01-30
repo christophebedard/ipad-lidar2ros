@@ -1,5 +1,5 @@
 /*
-See LICENSE folder for this sample’s licensing information.
+See LICENSE.3RD-PARTY file for this file’s licensing information.
 
 Abstract:
 Types and enums that are shared between shaders and the host app code.

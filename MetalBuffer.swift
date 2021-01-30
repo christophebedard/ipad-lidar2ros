@@ -1,5 +1,5 @@
 /*
-See LICENSE folder for this sample’s licensing information.
+See LICENSE.3RD-PARTY file for this file’s licensing information.
 
 Abstract:
 Type-safe utility for working with MTLBuffers.
