@@ -20,22 +20,21 @@ Display a simple help page in the app by pressing the help button in the lower r
 ## Modifying the app icon
 
 The source file for the app icon is [`lidar2ros_appicon.psd`](./lidar2ros_appicon.psd).
-Modify it using your favourite PSD-compatible editor (e.g. [Photopea](https://www.photopea.com)), then export the necessary PNGs.
+Modify it using your favourite PSD-compatible editor (e.g. [Photopea](https://www.photopea.com)). Then, create the necessary PNGs, since Xcode requires various sizes for the app icon.
 
-Make sure [`brew`](https://brew.sh) is installed, then install `imagemagick`.
+Make sure [`brew` is installed](https://brew.sh), then install `imagemagick`:
 
 ```zsh
 % brew install imagemagick
 ```
 
-To simply export the PSD file to a PNG:
+To simply export the PSD file to a PNG (if you want a preview):
 
 ```zsh
-% convert 'lidar2ros_app_logo.psd[0]' -resize 167x167 logo.png
+% convert 'lidar2ros_appicon.psd[0]' -resize 200x200 appicon.png
 ```
 
-Xcode requires various sizes for the app icon.
-Run the provided script to generate them all:
+Run the provided script to generate all the required PNGs:
 
 ```zsh
 % ./gen_appicon_assets.sh
