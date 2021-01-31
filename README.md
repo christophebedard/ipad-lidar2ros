@@ -1,4 +1,4 @@
-# [![lidar2ros app icon](./lidar2ros_appicon_rounded_readme.png)](./lidar2ros_appicon.psd) lidar2ros for iPad
+# [![lidar2ros app icon](./app-icon/lidar2ros_appicon_rounded_readme.png)](./app-icon/lidar2ros_appicon.psd) lidar2ros for iPad
 
 Publish iPad Pro LiDAR data & more in ROS 2.
 
@@ -19,7 +19,7 @@ Display a simple help page in the app by pressing the help button in the lower r
 
 ## Modifying the app icon
 
-The source file for the app icon is [`lidar2ros_appicon.psd`](./lidar2ros_appicon.psd).
+The source file for the app icon is [`lidar2ros_appicon.psd`](./app-icon/lidar2ros_appicon.psd).
 Modify it using your favourite PSD-compatible editor (e.g. [Photopea](https://www.photopea.com)). Then, create the necessary PNGs, since Xcode requires various sizes for the app icon.
 
 Make sure [`brew` is installed](https://brew.sh), then install `imagemagick`:

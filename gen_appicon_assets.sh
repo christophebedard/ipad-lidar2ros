@@ -1,21 +1,23 @@
 #!/bin/sh
 # Generate all appicon image formats
 
+# Appicon directory
+appicon_dir="./app-icon"
 # Source file for the appicon
-appicon_source_file="lidar2ros_appicon.psd"
+appicon_source_file="${appicon_dir}/lidar2ros_appicon.psd"
 # Directory containing the assets
-appicon_assets_directory="./Assets.xcassets/AppIcon.appiconset/"
+appicon_assets_dir="./Assets.xcassets/AppIcon.appiconset"
 # Source file for the appicon shape mask
-appicon_shape_mask_source_file="appicon_shape_mask.psd"
+appicon_shape_mask_source_file="${appicon_dir}/appicon_shape_mask.psd"
 # Rounded appicon file
 appicon_rounded_size=40
-appicon_rounded_file="lidar2ros_appicon_rounded_readme.png"
+appicon_rounded_file="${appicon_dir}/lidar2ros_appicon_rounded_readme.png"
 
 do_convert()
 {
     local id=$1
     local size=$2
-    local filepath="${appicon_assets_directory}/appicon-${id}-${size}.png"
+    local filepath="${appicon_assets_dir}/appicon-${id}-${size}.png"
     # Delete if it exists
     rm -f ${filepath}
     # Generate using '[0]' to get a flattened output
