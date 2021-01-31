@@ -1,4 +1,4 @@
-# ipad-lidar2ros
+# [![lidar2ros app icon](./lidar2ros_appicon_rounded_readme.png)](./lidar2ros_appicon.psd) lidar2ros for iPad
 
 Publish iPad Pro LiDAR data & more in ROS 2.
 
@@ -39,3 +39,5 @@ Run the provided script to generate all the required PNGs:
 ```zsh
 % ./gen_appicon_assets.sh
 ```
+
+This script also generates the rounded app icon used at the top of this README.

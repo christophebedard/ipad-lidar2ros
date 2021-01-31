@@ -5,6 +5,11 @@
 appicon_source_file="lidar2ros_appicon.psd"
 # Directory containing the assets
 appicon_assets_directory="./Assets.xcassets/AppIcon.appiconset/"
+# Source file for the appicon shape mask
+appicon_shape_mask_source_file="appicon_shape_mask.psd"
+# Rounded appicon file
+appicon_rounded_size=40
+appicon_rounded_file="lidar2ros_appicon_rounded_readme.png"
 
 do_convert()
 {
@@ -48,3 +53,17 @@ do_convert ipad-app 152
 do_convert ipad-pro-12p9-app 167
 # App Store
 do_convert app-store 1024
+
+# Generate rounded appicon for the README
+filename_mask="appicon_shape_mask.png"
+filename_appicon="appicon.png"
+appicon_rounded_size_geometry="${appicon_rounded_size}x${appicon_rounded_size}"
+
+# Convert mask to PNG
+convert "${appicon_shape_mask_source_file}[0]" -resize ${appicon_rounded_size_geometry} ${filename_mask}
+# Generate appicon PNG
+convert "${appicon_source_file}[0]" -resize ${appicon_rounded_size_geometry} ${filename_appicon}
+# Apply mask
+convert ${filename_appicon} -alpha on \( +clone -channel a -fx 0 \) +swap ${filename_mask} -composite ${appicon_rounded_file}
+# Cleanup
+rm -f ${filename_mask} ${filename_appicon}
