@@ -43,9 +43,9 @@ The table below lists the data available for publishing.
 
 | Description            | Default topic name | Message type              | Frame ID      |
 |------------------------|--------------------|---------------------------|---------------|
+| Transforms<sup>1</sup> |                    |                           |               |
 | LiDAR depth map        | `/ipad/depth`      | `sensor_msgs/Image`       | `ipad_camera` |
 | LiDAR point cloud      | `/ipad/pointcloud` | `sensor_msgs/PointCloud2` | `ipad`        |
-| Transforms<sup>1</sup> |                    |                           |               |
 | Camera image           | `/ipad/camera`     | `sensor_msgs/Image`       | `ipad_camera` |
 
 1. tf tree:

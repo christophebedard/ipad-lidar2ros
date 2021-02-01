@@ -25,9 +25,9 @@ protocol ViewWithPubController {
 final class PubController {
     /// Type of controlled publication.
     public enum PubType {
+        case transforms
         case depth
         case pointCloud
-        case transforms
         case camera
     }
     
@@ -40,10 +40,10 @@ final class PubController {
     
     init() {
         /// Create controlled pub objects for all publishers
-        self.controlledPubs[.depth] = ControlledPublisher(interface: self.interface, type: sensor_msgs__Image.self)
-        self.controlledPubs[.pointCloud] = ControlledPublisher(interface: self.interface, type: sensor_msgs__PointCloud2.self)
         // TODO create separate pub for /tf_static
         self.controlledPubs[.transforms] = ControlledStaticPublisher(interface: self.interface, type: tf2_msgs__TFMessage.self, topicName: "/tf")
+        self.controlledPubs[.depth] = ControlledPublisher(interface: self.interface, type: sensor_msgs__Image.self)
+        self.controlledPubs[.pointCloud] = ControlledPublisher(interface: self.interface, type: sensor_msgs__PointCloud2.self)
         self.controlledPubs[.camera] = ControlledPublisher(interface: self.interface, type: sensor_msgs__Image.self)
     }
     
@@ -112,9 +112,9 @@ final class PubController {
         
         if self.isEnabled {
             // TODO disable if publish fails?
+            self.controlledPubs[.transforms]?.publish(RosMessagesUtils.tfToTfMsg(time: time, tf: cameraTf))
             self.controlledPubs[.depth]?.publish(RosMessagesUtils.depthMapToImage(time: time, depthMap: depthMap))
             self.controlledPubs[.pointCloud]?.publish(RosMessagesUtils.pointsToPointCloud2(time: time, points: points))
-            self.controlledPubs[.transforms]?.publish(RosMessagesUtils.tfToTfMsg(time: time, tf: cameraTf))
             // TODO implement
             // self.controlledPubs[.camera]?.publish(RosMessagesUtils.pixelBufferToImage(time: time, pixelBuffer: cameraImage))
         }

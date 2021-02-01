@@ -24,6 +24,9 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
     private let urlTextField = UITextField()
     private let urlTextFieldLabel = UILabel()
     private let masterSwitch = UISwitch()
+    // Transforms
+    private let transformsLabel = UILabel()
+    private let transformsSwitch = UISwitch()
     // Depth
     private let topicNameDepthTextField = UITextField()
     private let topicNameDepthTextFieldLabel = UILabel()
@@ -32,9 +35,6 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
     private let topicNamePointCloudTextField = UITextField()
     private let topicNamePointCloudTextFieldLabel = UILabel()
     private let statusSwitchPointCloud = UISwitch()
-    // Transforms
-    private let transformsLabel = UILabel()
-    private let transformsSwitch = UISwitch()
     // Camera image
     private let topicNameCameraImageTextField = UITextField()
     private let topicNameCameraImageTextFieldLabel = UILabel()
@@ -82,19 +82,19 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
         
         // WebSocket URL field, label, and global switch
         self.createLabelTextFieldSwitchViews(uiLabel: urlTextFieldLabel, uiTextField: urlTextField, uiStatusSwitch: masterSwitch, labelText: "Remote bridge", textFieldPlaceholder: "192.168.0.xyz:abcd")
+        // Transforms
+        self.createLabelTextFieldSwitchViews(uiLabel: transformsLabel, uiTextField: nil, uiStatusSwitch: transformsSwitch, labelText: "Transforms", textFieldPlaceholder: nil)
         // Depth topic name field, label, and switch
         self.createLabelTextFieldSwitchViews(uiLabel: topicNameDepthTextFieldLabel, uiTextField: topicNameDepthTextField, uiStatusSwitch: statusSwitchDepth, labelText: "Depth map", textFieldPlaceholder: "/ipad/depth", useAsDefaultText: true)
         // Point cloud topic name field and label
         self.createLabelTextFieldSwitchViews(uiLabel: topicNamePointCloudTextFieldLabel, uiTextField: topicNamePointCloudTextField, uiStatusSwitch: statusSwitchPointCloud, labelText: "Point cloud", textFieldPlaceholder: "/ipad/pointcloud", useAsDefaultText: true)
-        // Transforms
-        self.createLabelTextFieldSwitchViews(uiLabel: transformsLabel, uiTextField: nil, uiStatusSwitch: transformsSwitch, labelText: "Transforms", textFieldPlaceholder: nil)
         // Camera image topic name field, label, and switch
         self.createLabelTextFieldSwitchViews(uiLabel: topicNameCameraImageTextFieldLabel, uiTextField: topicNameCameraImageTextField, uiStatusSwitch: statusSwitchCameraImage, labelText: "Camera", textFieldPlaceholder: "/ipad/camera", useAsDefaultText: true)
         
         // Stack with all the ROS config
-        let labelsStackView = self.createVerticalStack(arrangedSubviews: [urlTextFieldLabel, topicNameDepthTextFieldLabel, topicNamePointCloudTextFieldLabel, transformsLabel, topicNameCameraImageTextFieldLabel])
-        let textFieldsStackView = self.createVerticalStack(arrangedSubviews: [urlTextField, topicNameDepthTextField, topicNamePointCloudTextField, UIView(), topicNameCameraImageTextField])
-        let statusSwitchesView = self.createVerticalStack(arrangedSubviews: [masterSwitch, statusSwitchDepth, statusSwitchPointCloud, transformsSwitch, statusSwitchCameraImage])
+        let labelsStackView = self.createVerticalStack(arrangedSubviews: [urlTextFieldLabel, transformsLabel, topicNameDepthTextFieldLabel, topicNamePointCloudTextFieldLabel, topicNameCameraImageTextFieldLabel])
+        let textFieldsStackView = self.createVerticalStack(arrangedSubviews: [urlTextField, UIView(), topicNameDepthTextField, topicNamePointCloudTextField, topicNameCameraImageTextField])
+        let statusSwitchesView = self.createVerticalStack(arrangedSubviews: [masterSwitch, transformsSwitch, statusSwitchDepth, statusSwitchPointCloud, statusSwitchCameraImage])
         let rosStackView = UIStackView(arrangedSubviews: [labelsStackView, textFieldsStackView, statusSwitchesView])
         rosStackView.isHidden = !isUIEnabled
         rosStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -258,14 +258,14 @@ Then set the remote bridge IP and port to point to it.
         case self.masterSwitch:
             self.updateMasterSwitch()
             
+        case self.transformsSwitch:
+            self.updateTopicState(uiSwitch: self.transformsSwitch, pubType: .transforms, topicName: nil)
+            
         case self.statusSwitchDepth:
             self.updateTopicState(uiSwitch: self.statusSwitchDepth, pubType: .depth, topicName: self.topicNameDepthTextField.text!)
             
         case self.statusSwitchPointCloud:
             self.updateTopicState(uiSwitch: self.statusSwitchPointCloud, pubType: .pointCloud, topicName: self.topicNamePointCloudTextField.text!)
-            
-        case self.transformsSwitch:
-            self.updateTopicState(uiSwitch: self.transformsSwitch, pubType: .transforms, topicName: nil)
             
         case self.statusSwitchCameraImage:
             self.updateTopicState(uiSwitch: self.statusSwitchCameraImage, pubType: .camera, topicName: self.topicNameCameraImageTextField.text!)
