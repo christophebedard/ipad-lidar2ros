@@ -78,3 +78,11 @@ Run the provided script to generate all the required PNGs:
 ```
 
 This script also generates the rounded app icon used at the top of this README.
+
+## License
+
+This repository is released under the Apache License Version 2.0.
+See [`LICENSE`](./LICENSE).
+
+Some 3rd party code is used & distributed under the MIT license.
+See [`LICENSE.3RD-PARTY`](./LICENSE.3RD-PARTY).
