@@ -1,4 +1,4 @@
-# [![lidar2ros app icon](./app-icon/lidar2ros_appicon_rounded_readme.png)](./app-icon/lidar2ros_appicon.psd) lidar2ros for iPad
+# [![lidar2ros app icon](./app-icon/lidar2ros_appicon_rounded_readme.png)](./app-icon/lidar2ros_appicon.psd) &nbsp; lidar2ros for iPad
 
 Publish iPad Pro LiDAR data & more in ROS 2.
 
