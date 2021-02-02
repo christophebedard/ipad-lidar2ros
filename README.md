@@ -54,10 +54,10 @@ The table below lists the data available for publishing.
             * `ipad_camera`: iPad camera
                 * `ipad`: iPad in landscape mode
 
-## Modifying the app icon
+## Generating the app icon assets
 
-The source file for the app icon is [`lidar2ros_appicon.psd`](./app-icon/lidar2ros_appicon.psd).
-Modify it using your favourite PSD-compatible editor (e.g. [Photopea](https://www.photopea.com)). Then, create the necessary PNGs, since Xcode requires various sizes for the app icon.
+Xcode requires PNGs of various sizes for the app icon.
+These can easily be generated from the source file ([`lidar2ros_appicon.psd`](./app-icon/lidar2ros_appicon.psd)).
 
 Make sure [`brew` is installed](https://brew.sh), then install `imagemagick`:
 
