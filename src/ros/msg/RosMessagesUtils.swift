@@ -133,10 +133,9 @@ final class RosMessagesUtils {
     
     /// Get TFMessage message from camera tf.
     public static func tfToTfMsg(time: Double, tf: simd_float4x4) -> tf2_msgs__TFMessage {
-        let arkitRef = self.getARKitReference()
-        let tfArkitRef = self.transformStampedFromTf(arkitRef, time: time, frame_id: "map_ipad", child_frame_id: "arkit_ref")
+        let tfArkitRef = self.transformStampedFromTf(self.arkitReference, time: time, frame_id: "map_ipad", child_frame_id: "arkit_ref")
         let tfCamera = self.transformStampedFromTf(tf, time: time, frame_id: "arkit_ref", child_frame_id: "ipad_camera")
-        let tfIpad = self.transformStampedFromTf(arkitRef.inverse, time: time, frame_id: "ipad_camera", child_frame_id: "ipad")
+        let tfIpad = self.transformStampedFromTf(self.arkitReferenceInverse, time: time, frame_id: "ipad_camera", child_frame_id: "ipad")
         return tf2_msgs__TFMessage(transforms: [tfArkitRef, tfCamera, tfIpad])
     }
     
@@ -150,6 +149,9 @@ final class RosMessagesUtils {
         let tfMsg = geometry_msgs__Transform(translation: translationMsg, rotation: roationMsg)
         return geometry_msgs__TransformStamped(header: header, child_frame_id: child_frame_id, transform: tfMsg)
     }
+    
+    static let arkitReference: simd_float4x4 = getARKitReference()
+    static let arkitReferenceInverse: simd_float4x4 = arkitReference.inverse
     
     /// Get transform for ARKit coordinate system in normal ROS coordinate system.
     public static func getARKitReference() -> simd_float4x4 {
