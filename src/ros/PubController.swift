@@ -39,7 +39,7 @@ final class PubController {
     
     private var controlledPubs: [PubType: [ControlledPublisher]]
     private var pubTf: ControlledStaticPublisher
-    private var pubTfStatic: ControlledStaticPublisher
+    // private var pubTfStatic: ControlledStaticPublisher
     private var pubDepth: ControlledPublisher
     private var pubPointCloud: ControlledPublisher
     private var pubCamera: ControlledPublisher
@@ -47,13 +47,15 @@ final class PubController {
     init() {
         /// Create controlled pub objects for all publishers
         self.pubTf = ControlledStaticPublisher(interface: self.interface, type: tf2_msgs__TFMessage.self, topicName: "/tf")
-        self.pubTfStatic = ControlledStaticPublisher(interface: self.interface, type: tf2_msgs__TFMessage.self, topicName: "/tf_static")
+        // FIXME: using /tf only for now because /tf_static does not seem to work
+        // self.pubTfStatic = ControlledStaticPublisher(interface: self.interface, type: tf2_msgs__TFMessage.self, topicName: "/tf")
         self.pubDepth = ControlledPublisher(interface: self.interface, type: sensor_msgs__Image.self)
         self.pubPointCloud = ControlledPublisher(interface: self.interface, type: sensor_msgs__PointCloud2.self)
         self.pubCamera = ControlledPublisher(interface: self.interface, type: sensor_msgs__Image.self)
         
         self.controlledPubs = [
-            .transforms: [self.pubTf, self.pubTfStatic],
+            //.transforms: [self.pubTf, self.pubTfStatic],
+            .transforms: [self.pubTf],
             .depth: [self.pubDepth],
             .pointCloud: [self.pubPointCloud],
             .camera: [self.pubCamera],
@@ -147,8 +149,13 @@ final class PubController {
         
         if self.isEnabled {
             // TODO disable if publish fails?
-            self.pubTf.publish(RosMessagesUtils.tfToTfMsg(time: time, tf: cameraTf))
-            self.pubTfStatic.publish(RosMessagesUtils.getTfStaticMsg(time: time))
+            // TODO revert when /tf_static works
+            // self.pubTf.publish(RosMessagesUtils.tfToTfMsg(time: time, tf: cameraTf))
+            // self.pubTfStatic.publish(RosMessagesUtils.getTfStaticMsg(time: time))
+            var tfMsg = RosMessagesUtils.tfToTfMsg(time: time, tf: cameraTf)
+            let tfStaticMsg = RosMessagesUtils.getTfStaticMsg(time: time)
+            tfMsg.transforms.append(contentsOf: tfStaticMsg.transforms)
+            self.pubTf.publish(tfMsg)
             self.pubDepth.publish(RosMessagesUtils.depthMapToImage(time: time, depthMap: depthMap))
             self.pubPointCloud.publish(RosMessagesUtils.pointsToPointCloud2(time: time, points: points))
             // TODO implement
