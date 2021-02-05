@@ -133,10 +133,15 @@ final class RosMessagesUtils {
     
     /// Get TFMessage message from camera tf.
     public static func tfToTfMsg(time: Double, tf: simd_float4x4) -> tf2_msgs__TFMessage {
-        let tfArkitRef = self.transformStampedFromTf(self.arkitReference, time: time, frame_id: "map_ipad", child_frame_id: "arkit_ref")
         let tfCamera = self.transformStampedFromTf(tf, time: time, frame_id: "arkit_ref", child_frame_id: "ipad_camera")
+        return tf2_msgs__TFMessage(transforms: [tfCamera])
+    }
+    
+    /// Get static TFMessage message.
+    public static func getTfStaticMsg(time: Double) -> tf2_msgs__TFMessage {
+        let tfArkitRef = self.transformStampedFromTf(self.arkitReference, time: time, frame_id: "map_ipad", child_frame_id: "arkit_ref")
         let tfIpad = self.transformStampedFromTf(self.arkitReferenceInverse, time: time, frame_id: "ipad_camera", child_frame_id: "ipad")
-        return tf2_msgs__TFMessage(transforms: [tfArkitRef, tfCamera, tfIpad])
+        return tf2_msgs__TFMessage(transforms: [tfArkitRef, tfIpad])
     }
     
     /// Get TransformStamped message given various parameters.
