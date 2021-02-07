@@ -16,11 +16,6 @@ import Foundation
 import OSLog
 import ARKit
 
-/// Simple protocol for a view controller with a PubController.
-protocol ViewWithPubController {
-    func setPubController(pubController: PubController)
-}
-
 /// Publishing controller for all data.
 final class PubController {
     /// Type of controlled publication.

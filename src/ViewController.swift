@@ -11,7 +11,7 @@ import MetalKit
 import ARKit
 import OSLog
 
-final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubController {
+final class ViewController: UIViewController, ARSessionDelegate {
     private let logger = Logger(subsystem: "com.christophebedard.lidar2ros", category: "ViewController")
     
     private let isUIEnabled = true
@@ -20,14 +20,17 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
     
     // Help page button
     private let helpPageButton = UIButton()
-    // Pub controller
-    private var pubController: PubController?
     
-    private let session = ARSession()
+    private var pubController: PubController!
+    private var session: ARSession!
+    private var rosControllerViewProvider: RosControllerViewProvider!
+    
     private var renderer: Renderer!
     
-    public func setPubController(pubController: PubController) {
-        self.pubController = pubController
+    public func setPubManager(pubManager: PubManager) {
+        self.logger.debug("setPubManager")
+        self.pubController = pubManager.pubController
+        self.session = pubManager.session
     }
     
     override func viewDidLoad() {
@@ -37,6 +40,8 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
             print("Metal is not supported on this device")
             return
         }
+        
+        self.logger.debug("viewDidLoad")
         
         session.delegate = self
         
@@ -79,7 +84,7 @@ final class ViewController: UIViewController, ARSessionDelegate, ViewWithPubCont
         rgbRadiusSlider.value = renderer.rgbRadius
         rgbRadiusSlider.addTarget(self, action: #selector(viewValueChanged), for: .valueChanged)
         
-        let rosControllerViewProvider = RosControllerViewProvider(pubController: self.pubController!, session: self.session)
+        self.rosControllerViewProvider = RosControllerViewProvider(pubController: self.pubController!, session: self.session)
         
         // Then stacked vertically
         let stackView = UIStackView(arrangedSubviews: [rosControllerViewProvider.view!, separator, confidenceControl, rgbRadiusSlider])

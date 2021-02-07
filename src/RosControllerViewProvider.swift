@@ -41,8 +41,8 @@ final class RosControllerViewProvider {
     private let topicNameCameraImageTextFieldLabel = UILabel()
     private let statusSwitchCameraImage = UISwitch()
     
-    private var session: ARSession
-    private var pubController: PubController
+    private let session: ARSession
+    private let pubController: PubController
     
     public private(set) var view: UIView?
     
@@ -68,15 +68,11 @@ final class RosControllerViewProvider {
         let textFieldsStackView = self.createVerticalStack(arrangedSubviews: [urlTextField, UIView(), topicNameDepthTextField, topicNamePointCloudTextField, topicNameCameraImageTextField])
         let statusSwitchesView = self.createVerticalStack(arrangedSubviews: [masterSwitch, transformsSwitch, statusSwitchDepth, statusSwitchPointCloud, statusSwitchCameraImage])
         let rosStackView = UIStackView(arrangedSubviews: [labelsStackView, textFieldsStackView, statusSwitchesView])
-        //rosStackView.isHidden = !isUIEnabled
         rosStackView.translatesAutoresizingMaskIntoConstraints = false
         rosStackView.axis = .horizontal
         rosStackView.spacing = 10
         
         self.view = rosStackView
-        
-        // TODO extract to separate class
-        Timer.scheduledTimer(timeInterval: 1.0/10.0, target: self, selector: #selector(updatePub), userInfo: nil, repeats: true)
     }
     
     private func createLabelTextFieldSwitchViews(uiLabel: UILabel, uiTextField: UITextField?, uiStatusSwitch: UISwitch, labelText: String, textFieldPlaceholder: String?, useAsDefaultText: Bool = false) {
@@ -99,7 +95,6 @@ final class RosControllerViewProvider {
     
     private func createVerticalStack(arrangedSubviews: [UIView]) -> UIStackView {
         let stackView = UIStackView(arrangedSubviews: arrangedSubviews)
-        //stackView.isHidden = !isUIEnabled
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
         stackView.spacing = 10
@@ -202,22 +197,6 @@ final class RosControllerViewProvider {
         } else {
             // Disable publishing
             self.pubController.disablePub(pubType: pubType)
-        }
-    }
-    
-    @objc
-    private func updatePub() {
-        // TODO move to more appropriate place (non UI thread)
-        let currentFrame = self.session.currentFrame
-        if nil != currentFrame {
-            let timestamp = currentFrame!.timestamp
-            let depthMap = currentFrame!.sceneDepth?.depthMap
-            let pointCloud = currentFrame!.rawFeaturePoints?.points
-            let cameraTf = currentFrame!.camera.transform
-            let cameraImage = currentFrame!.capturedImage
-            if nil != depthMap && nil != pointCloud {
-                self.pubController.update(time: timestamp, depthMap: depthMap!, points: pointCloud!, cameraTf: cameraTf, cameraImage: cameraImage)
-            }
         }
     }
 }

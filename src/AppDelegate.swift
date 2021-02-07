@@ -15,7 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
     
-    private let pubController = PubController()
+    private let pubManager = PubManager()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         self.logger.info("application")
@@ -25,24 +25,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             window?.rootViewController = storyboard.instantiateViewController(withIdentifier: "unsupportedDeviceMessage")
         } else {
-            (window?.rootViewController as! ViewWithPubController).setPubController(pubController: self.pubController)
+            (window?.rootViewController as! ViewController).setPubManager(pubManager: self.pubManager)
         }
+        self.pubManager.start()
         return true
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
         self.logger.debug("app did enter background")
-        self.pubController.pause()
+        self.pubManager.pubController.pause()
     }
     
     func applicationWillEnterForeground(_ application: UIApplication) {
         self.logger.debug("app will enter foreground")
-        self.pubController.resume()
+        self.pubManager.pubController.resume()
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
         self.logger.debug("app will terminate")
-        self.pubController.disable()
+        self.pubManager.pubController.disable()
     }
 }
-
