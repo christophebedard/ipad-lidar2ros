@@ -41,7 +41,7 @@ class ControlledPublisher {
     }
     
     @discardableResult
-    public func publish<T>(_ msg: T) -> Bool where T : RosMsg {
+    public func publish<T>(_ msg: T) -> Bool where T: RosMsg {
         if !self.isEnabled {
             return true
         }

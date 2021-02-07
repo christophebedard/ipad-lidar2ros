@@ -16,7 +16,7 @@ import Foundation
 import OSLog
 
 /// Managed publisher that can be enabled/idsabled and for which we can't change the topic.
-final class ControlledStaticPublisher : ControlledPublisher {
+final class ControlledStaticPublisher: ControlledPublisher {
     private var logger = Logger(subsystem: "com.christophebedard.lidar2ros", category: "ControlledStaticPublisher")
     
     private let topicName: String

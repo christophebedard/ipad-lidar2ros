@@ -18,19 +18,19 @@ import Foundation
 typealias RosMsg = Encodable
 
 /// builtin_interfaces/Time
-struct builtin_interfaces__Time : RosMsg {
+struct builtin_interfaces__Time: RosMsg {
     var sec: Int32
     var nanosec: UInt32
 }
 
 /// std_msgs/Header
-struct std_msgs__Header : RosMsg {
+struct std_msgs__Header: RosMsg {
     var stamp: builtin_interfaces__Time
     var frame_id: String
 }
 
 /// sensor_msgs/Image
-struct sensor_msgs__Image : RosMsg {
+struct sensor_msgs__Image: RosMsg {
     var header: std_msgs__Header
     var height: UInt32
     var width: UInt32
@@ -52,12 +52,12 @@ struct sensor_msgs__Image : RosMsg {
 }
 
 /// std_msgs/String
-struct std_msgs__String : RosMsg {
+struct std_msgs__String: RosMsg {
     var data: String
 }
 
 /// sensor_msgs/PointField
-struct sensor_msgs__PointField : RosMsg {
+struct sensor_msgs__PointField: RosMsg {
     var name: String
     var offset: UInt32
     var datatype: UInt8
@@ -74,7 +74,7 @@ struct sensor_msgs__PointField : RosMsg {
 }
 
 /// sensor_msgs/PointCloud2
-struct sensor_msgs__PointCloud2 : RosMsg {
+struct sensor_msgs__PointCloud2: RosMsg {
     var header: std_msgs__Header
     var height: UInt32
     var width: UInt32
@@ -87,14 +87,14 @@ struct sensor_msgs__PointCloud2 : RosMsg {
 }
 
 /// geometry_msgs/Vector3
-struct geometry_msgs__Vector3 : RosMsg {
+struct geometry_msgs__Vector3: RosMsg {
     var x: Float64
     var y: Float64
     var z: Float64
 }
 
 /// geometry_msgs/Quaternion
-struct geometry_msgs__Quaternion : RosMsg {
+struct geometry_msgs__Quaternion: RosMsg {
     var x: Float64
     var y: Float64
     var z: Float64
@@ -102,19 +102,19 @@ struct geometry_msgs__Quaternion : RosMsg {
 }
 
 /// geometry_msgs/Transform
-struct geometry_msgs__Transform : RosMsg {
+struct geometry_msgs__Transform: RosMsg {
     var translation: geometry_msgs__Vector3
     var rotation: geometry_msgs__Quaternion
 }
 
 /// geometry_msgs/TransformStamped
-struct geometry_msgs__TransformStamped : RosMsg {
+struct geometry_msgs__TransformStamped: RosMsg {
     var header: std_msgs__Header
     var child_frame_id: String
     var transform: geometry_msgs__Transform
 }
 
 /// tf2_msgs/TFMessage
-struct tf2_msgs__TFMessage : RosMsg {
+struct tf2_msgs__TFMessage: RosMsg {
     var transforms: [geometry_msgs__TransformStamped]
 }

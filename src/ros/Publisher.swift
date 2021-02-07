@@ -99,7 +99,7 @@ final class Publisher {
     /// - parameter msg: the message to publish
     /// - returns: true if successful, false otherwise
     @discardableResult
-    public func publish<T>(_ msg: T) -> Bool where T : RosMsg {
+    public func publish<T>(_ msg: T) -> Bool where T: RosMsg {
         if !self.isAdvertised && !self.advertise() {
             return false
         }
