@@ -25,25 +25,31 @@ final class RosControllerViewProvider {
     private let urlTextField = UITextField()
     private let urlTextFieldLabel = UILabel()
     private let masterSwitch = UISwitch()
-    // Transforms
-    private let transformsLabel = UILabel()
-    private let transformsSwitch = UISwitch()
-    // Depth
-    private let topicNameDepthTextField = UITextField()
-    private let topicNameDepthTextFieldLabel = UILabel()
-    private let statusSwitchDepth = UISwitch()
-    // Point cloud
-    private let topicNamePointCloudTextField = UITextField()
-    private let topicNamePointCloudTextFieldLabel = UILabel()
-    private let statusSwitchPointCloud = UISwitch()
-    // Camera image
-    private let topicNameCameraImageTextField = UITextField()
-    private let topicNameCameraImageTextFieldLabel = UILabel()
-    private let statusSwitchCameraImage = UISwitch()
+    
+    private struct PubEntry {
+        var label: UILabel
+        var labelText: String
+        var topicNameField: UITextField?
+        var defaultTopicName: String?
+        var stateSwitch: UISwitch
+        var rateStepper: UIStepper
+        var rateStepperLabel: UILabel
+        var rateMin: Double = 0.5
+        var rateMax: Double = 20.0
+        var rateDefault: Double = 2.0
+        var rateStep: Double = 0.5
+    }
+    
+    private let pubEntries: [PubController.PubType: PubEntry]
+    private let transformsEntry: PubEntry
+    private let depthEntry: PubEntry
+    private let pointCloudEntry: PubEntry
+    private let cameraEntry: PubEntry
     
     private let session: ARSession
     private let pubController: PubController
     
+    /// The provided view.
     public private(set) var view: UIView?
     
     init(pubController: PubController, session: ARSession) {
@@ -52,22 +58,34 @@ final class RosControllerViewProvider {
         self.pubController = pubController
         self.session = session
         
+        // Pub UI entries
+        self.transformsEntry = PubEntry(label: UILabel(), labelText: "Transforms", topicNameField: nil, defaultTopicName: nil, stateSwitch: UISwitch(), rateStepper: UIStepper(), rateStepperLabel: UILabel())
+        self.depthEntry = PubEntry(label: UILabel(), labelText: "Depth map", topicNameField: UITextField(), defaultTopicName: "/ipad/depth", stateSwitch: UISwitch(), rateStepper: UIStepper(), rateStepperLabel: UILabel())
+        self.pointCloudEntry = PubEntry(label: UILabel(), labelText: "Point cloud", topicNameField: UITextField(), defaultTopicName: "/ipad/pointcloud", stateSwitch: UISwitch(), rateStepper: UIStepper(), rateStepperLabel: UILabel())
+        self.cameraEntry = PubEntry(label: UILabel(), labelText: "Camera", topicNameField: UITextField(), defaultTopicName: "/ipad/camera", stateSwitch: UISwitch(), rateStepper: UIStepper(), rateStepperLabel: UILabel())
+        
+        self.pubEntries = [
+            .transforms: self.transformsEntry,
+            .depth: self.depthEntry,
+            .pointCloud: self.pointCloudEntry,
+            .camera: self.cameraEntry,
+        ]
+        
+        self.initViewsFromEntry(self.transformsEntry)
+        self.initViewsFromEntry(self.depthEntry)
+        self.initViewsFromEntry(self.pointCloudEntry)
+        self.initViewsFromEntry(self.cameraEntry)
+        
         // WebSocket URL field, label, and global switch
-        self.createLabelTextFieldSwitchViews(uiLabel: urlTextFieldLabel, uiTextField: urlTextField, uiStatusSwitch: masterSwitch, labelText: "Remote bridge", textFieldPlaceholder: "192.168.0.xyz:abcd")
-        // Transforms
-        self.createLabelTextFieldSwitchViews(uiLabel: transformsLabel, uiTextField: nil, uiStatusSwitch: transformsSwitch, labelText: "Transforms", textFieldPlaceholder: nil)
-        // Depth topic name field, label, and switch
-        self.createLabelTextFieldSwitchViews(uiLabel: topicNameDepthTextFieldLabel, uiTextField: topicNameDepthTextField, uiStatusSwitch: statusSwitchDepth, labelText: "Depth map", textFieldPlaceholder: "/ipad/depth", useAsDefaultText: true)
-        // Point cloud topic name field and label
-        self.createLabelTextFieldSwitchViews(uiLabel: topicNamePointCloudTextFieldLabel, uiTextField: topicNamePointCloudTextField, uiStatusSwitch: statusSwitchPointCloud, labelText: "Point cloud", textFieldPlaceholder: "/ipad/pointcloud", useAsDefaultText: true)
-        // Camera image topic name field, label, and switch
-        self.createLabelTextFieldSwitchViews(uiLabel: topicNameCameraImageTextFieldLabel, uiTextField: topicNameCameraImageTextField, uiStatusSwitch: statusSwitchCameraImage, labelText: "Camera", textFieldPlaceholder: "/ipad/camera", useAsDefaultText: true)
+        self.initViews(uiLabel: urlTextFieldLabel, labelText: "Remote bridge", uiTextField: urlTextField, uiStatusSwitch: masterSwitch, textFieldPlaceholder: "192.168.0.xyz:abcd")
         
         // Stack with all the ROS config
-        let labelsStackView = self.createVerticalStack(arrangedSubviews: [urlTextFieldLabel, transformsLabel, topicNameDepthTextFieldLabel, topicNamePointCloudTextFieldLabel, topicNameCameraImageTextFieldLabel])
-        let textFieldsStackView = self.createVerticalStack(arrangedSubviews: [urlTextField, UIView(), topicNameDepthTextField, topicNamePointCloudTextField, topicNameCameraImageTextField])
-        let statusSwitchesView = self.createVerticalStack(arrangedSubviews: [masterSwitch, transformsSwitch, statusSwitchDepth, statusSwitchPointCloud, statusSwitchCameraImage])
-        let rosStackView = UIStackView(arrangedSubviews: [labelsStackView, textFieldsStackView, statusSwitchesView])
+        let labelsStackView = self.createVerticalStack(arrangedSubviews: [urlTextFieldLabel, self.transformsEntry.label, self.depthEntry.label, self.pointCloudEntry.label, self.cameraEntry.label])
+        let textFieldsStackView = self.createVerticalStack(arrangedSubviews: [urlTextField, UIView(), self.depthEntry.topicNameField!, self.pointCloudEntry.topicNameField!, self.cameraEntry.topicNameField!])
+        let statusSwitchesView = self.createVerticalStack(arrangedSubviews: [masterSwitch, self.transformsEntry.stateSwitch, self.depthEntry.stateSwitch, self.pointCloudEntry.stateSwitch, self.cameraEntry.stateSwitch])
+        let steppersView = self.createVerticalStack(arrangedSubviews: [UIView(), self.transformsEntry.rateStepper, self.depthEntry.rateStepper, self.pointCloudEntry.rateStepper, self.cameraEntry.rateStepper])
+        let stepperDisplaysView = self.createVerticalStack(arrangedSubviews: [UIView(), self.transformsEntry.rateStepperLabel, self.depthEntry.rateStepperLabel, self.pointCloudEntry.rateStepperLabel, self.cameraEntry.rateStepperLabel])
+        let rosStackView = UIStackView(arrangedSubviews: [labelsStackView, textFieldsStackView, statusSwitchesView, steppersView, stepperDisplaysView])
         rosStackView.translatesAutoresizingMaskIntoConstraints = false
         rosStackView.axis = .horizontal
         rosStackView.spacing = 10
@@ -75,7 +93,11 @@ final class RosControllerViewProvider {
         self.view = rosStackView
     }
     
-    private func createLabelTextFieldSwitchViews(uiLabel: UILabel, uiTextField: UITextField?, uiStatusSwitch: UISwitch, labelText: String, textFieldPlaceholder: String?, useAsDefaultText: Bool = false) {
+    private func initViewsFromEntry(_ pubEntry: PubEntry) {
+        self.initViews(uiLabel: pubEntry.label, labelText: pubEntry.labelText, uiTextField: pubEntry.topicNameField, uiStatusSwitch: pubEntry.stateSwitch, textFieldPlaceholder: pubEntry.defaultTopicName, useAsDefaultText: true, pubEntry: pubEntry)
+    }
+    
+    private func initViews(uiLabel: UILabel, labelText: String, uiTextField: UITextField?, uiStatusSwitch: UISwitch, textFieldPlaceholder: String?, useAsDefaultText: Bool = false, pubEntry: PubEntry? = nil) {
         if nil != uiTextField {
             uiTextField!.borderStyle = UITextField.BorderStyle.bezel
             uiTextField!.clearButtonMode = UITextField.ViewMode.whileEditing
@@ -86,11 +108,22 @@ final class RosControllerViewProvider {
                     uiTextField!.text = textFieldPlaceholder
                 }
             }
-            uiTextField!.addTarget(self, action: #selector(viewValueChanged), for: .editingDidEndOnExit)
+            uiTextField!.addTarget(self, action: #selector(textFieldValueChanged), for: .editingDidEndOnExit)
         }
         uiLabel.attributedText = NSAttributedString(string: labelText)
         uiStatusSwitch.preferredStyle = UISwitch.Style.checkbox
         uiStatusSwitch.addTarget(self, action: #selector(switchStatusChanged), for: .valueChanged)
+        if nil != pubEntry {
+            pubEntry!.rateStepper.autorepeat = true
+            pubEntry!.rateStepper.isContinuous = false
+            pubEntry!.rateStepper.minimumValue = pubEntry!.rateMin
+            pubEntry!.rateStepper.maximumValue = pubEntry!.rateMax
+            pubEntry!.rateStepper.stepValue = pubEntry!.rateStep
+            pubEntry!.rateStepper.value = pubEntry!.rateDefault
+            pubEntry!.rateStepper.isEnabled = false
+            pubEntry!.rateStepper.addTarget(self, action: #selector(stepperValueChanged), for: .valueChanged)
+            pubEntry!.rateStepperLabel.text = RosControllerViewProvider.rateAsString(pubEntry!.rateStepper.value)
+        }
     }
     
     private func createVerticalStack(arrangedSubviews: [UIView]) -> UIStackView {
@@ -104,20 +137,20 @@ final class RosControllerViewProvider {
     }
     
     @objc
-    private func viewValueChanged(view: UIView) {
+    private func textFieldValueChanged(view: UIView) {
         switch view {
             
         case self.urlTextField:
             self.updateUrl()
             
-        case self.topicNameDepthTextField:
-            self.updatePubTopic(uiSwitch: self.statusSwitchDepth, pubType: .depth, topicName: self.topicNameDepthTextField.text!)
+        case self.depthEntry.topicNameField:
+            self.updatePubTopic(.depth)
             
-        case self.topicNamePointCloudTextField:
-            self.updatePubTopic(uiSwitch: self.statusSwitchPointCloud, pubType: .pointCloud, topicName: self.topicNamePointCloudTextField.text!)
+        case self.pointCloudEntry.topicNameField:
+            self.updatePubTopic(.pointCloud)
             
-        case self.topicNameCameraImageTextField:
-            self.updatePubTopic(uiSwitch: self.statusSwitchCameraImage, pubType: .camera, topicName: self.topicNameCameraImageTextField.text!)
+        case self.cameraEntry.topicNameField:
+            self.updatePubTopic(.camera)
             
         default:
             break
@@ -131,22 +164,43 @@ final class RosControllerViewProvider {
         case self.masterSwitch:
             self.updateMasterSwitch()
             
-        case self.transformsSwitch:
-            self.updateTopicState(uiSwitch: self.transformsSwitch, pubType: .transforms, topicName: nil)
+        case self.transformsEntry.stateSwitch:
+            self.updateTopicState(.transforms)
             
-        case self.statusSwitchDepth:
-            self.updateTopicState(uiSwitch: self.statusSwitchDepth, pubType: .depth, topicName: self.topicNameDepthTextField.text!)
+        case self.depthEntry.stateSwitch:
+            self.updateTopicState(.depth)
             
-        case self.statusSwitchPointCloud:
-            self.updateTopicState(uiSwitch: self.statusSwitchPointCloud, pubType: .pointCloud, topicName: self.topicNamePointCloudTextField.text!)
+        case self.pointCloudEntry.stateSwitch:
+            self.updateTopicState(.pointCloud)
             
-        case self.statusSwitchCameraImage:
-            self.updateTopicState(uiSwitch: self.statusSwitchCameraImage, pubType: .camera, topicName: self.topicNameCameraImageTextField.text!)
+        case self.cameraEntry.stateSwitch:
+            self.updateTopicState(.camera)
             
         default:
             break
         }
     }
+    
+     @objc
+     private func stepperValueChanged(view: UIView) {
+        switch view {
+        
+        case self.transformsEntry.rateStepper:
+            self.updateRate(.transforms)
+        
+        case self.depthEntry.rateStepper:
+            self.updateRate(.depth)
+
+        case self.pointCloudEntry.rateStepper:
+            self.updateRate(.pointCloud)
+
+        case self.cameraEntry.rateStepper:
+            self.updateRate(.camera)
+        
+        default:
+            break
+        }
+     }
     
     private func updateUrl() {
         // Enable pub controller and/or update URL
@@ -169,34 +223,49 @@ final class RosControllerViewProvider {
         }
     }
     
-    private func updatePubTopic(uiSwitch: UISwitch, pubType: PubController.PubType, topicName: String?) {
-        if self.pubController.updatePubTopic(pubType: .depth, topicName: self.topicNameDepthTextField.text!) {
-            uiSwitch.setOn(true, animated: true)
-            self.updateTopicState(uiSwitch: uiSwitch, pubType: pubType, topicName: topicName)
+    private func updatePubTopic(_ pubType: PubController.PubType) {
+        let pubEntry = self.pubEntries[pubType]!
+        if self.pubController.updatePubTopic(pubType: .depth, topicName: pubEntry.topicNameField?.text!) {
+            pubEntry.stateSwitch.setOn(true, animated: true)
+            self.updateTopicState(pubType)
         } else {
             // Disable pub and turn off switch
             self.pubController.disablePub(pubType: pubType)
-            uiSwitch.setOn(false, animated: true)
+            pubEntry.stateSwitch.setOn(false, animated: true)
         }
     }
     
-    private func updateTopicState(uiSwitch: UISwitch, pubType: PubController.PubType, topicName: String?) {
-        if uiSwitch.isOn {
+    private func updateTopicState(_ pubType: PubController.PubType) {
+        let pubEntry = self.pubEntries[pubType]!
+        if pubEntry.stateSwitch.isOn {
             // Enable publishing
-            if self.pubController.enablePub(pubType: pubType, topicName: topicName) {
+            if self.pubController.enablePub(pubType: pubType, topicName: pubEntry.topicNameField?.text!) {
                 // Enable master switch if not already enabled
                 if !self.masterSwitch.isOn {
                     self.masterSwitch.setOn(true, animated: true)
+                    pubEntry.rateStepper.isEnabled = true
                     self.updateMasterSwitch()
                 }
             } else {
-                // Enabling failed, so disable and turn off switch
-                uiSwitch.setOn(false, animated: true)
+                // Enabling failed, so disable publishing & stepper and turn off switch
+                pubEntry.stateSwitch.setOn(false, animated: true)
+                pubEntry.rateStepper.isEnabled = false
                 self.pubController.disablePub(pubType: pubType)
             }
         } else {
-            // Disable publishing
+            // Disable publishing and stepper
             self.pubController.disablePub(pubType: pubType)
+            pubEntry.rateStepper.isEnabled = false
         }
+    }
+    
+    private func updateRate(_ pubType: PubController.PubType) {
+        let pubEntry = self.pubEntries[pubType]!
+        pubEntry.rateStepperLabel.text = RosControllerViewProvider.rateAsString(pubEntry.rateStepper.value)
+        // TODO change pub rate
+    }
+    
+    private static func rateAsString(_ rate: Double) -> String {
+        return String(format: "%.1f Hz", rate)
     }
 }

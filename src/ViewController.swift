@@ -75,14 +75,14 @@ final class ViewController: UIViewController, ARSessionDelegate {
         // Confidence control
         confidenceControl.backgroundColor = .white
         confidenceControl.selectedSegmentIndex = renderer.confidenceThreshold
-        confidenceControl.addTarget(self, action: #selector(viewValueChanged), for: .valueChanged)
+        confidenceControl.addTarget(self, action: #selector(textFieldValueChanged), for: .valueChanged)
         
         // RGB Radius control
         rgbRadiusSlider.minimumValue = 0
         rgbRadiusSlider.maximumValue = 1.5
         rgbRadiusSlider.isContinuous = true
         rgbRadiusSlider.value = renderer.rgbRadius
-        rgbRadiusSlider.addTarget(self, action: #selector(viewValueChanged), for: .valueChanged)
+        rgbRadiusSlider.addTarget(self, action: #selector(textFieldValueChanged), for: .valueChanged)
         
         self.rosControllerViewProvider = RosControllerViewProvider(pubController: self.pubController!, session: self.session)
         
@@ -146,7 +146,7 @@ Then set the remote bridge IP and port to point to it.
     }
     
     @objc
-    private func viewValueChanged(view: UIView) {
+    private func textFieldValueChanged(view: UIView) {
         switch view {
             
         case confidenceControl:
