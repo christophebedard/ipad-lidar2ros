@@ -14,12 +14,13 @@ import OSLog
 final class ViewController: UIViewController, ARSessionDelegate {
     private let logger = Logger(subsystem: "com.christophebedard.lidar2ros", category: "ViewController")
     
-    private let isUIEnabled = true
     private let confidenceControl = UISegmentedControl(items: ["Low", "Medium", "High"])
     private let rgbRadiusSlider = UISlider()
     
-    // Help page button
     private let helpPageButton = UIButton()
+    private let controlsButton = UIButton()
+    private var isControlsViewEnabled = true
+    private var mainView: UIStackView?
     
     private var pubController: PubController!
     private var session: ARSession!
@@ -60,12 +61,17 @@ final class ViewController: UIViewController, ARSessionDelegate {
             renderer.drawRectResized(size: view.bounds.size)
         }
         
-        // TODO extract to separate class
         // Help page/message button
         let helpIcon = UIImage(systemName: "questionmark.circle.fill", withConfiguration: UIImage.SymbolConfiguration(scale: .large))?.withTintColor(UIColor(white: 1.0, alpha: 0.5), renderingMode: .alwaysOriginal)
         self.helpPageButton.setImage(helpIcon, for: .normal)
         self.helpPageButton.addTarget(self, action: #selector(showHelp), for: .touchUpInside)
         self.helpPageButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Controls display button
+        let controlsIcon = UIImage(systemName: "gearshape.fill", withConfiguration: UIImage.SymbolConfiguration(scale: .large))?.withTintColor(UIColor(white: 1.0, alpha: 0.5), renderingMode: .alwaysOriginal)
+        self.controlsButton.setImage(controlsIcon, for: .normal)
+        self.controlsButton.addTarget(self, action: #selector(controlsButtonPressed), for: .touchUpInside)
+        self.controlsButton.translatesAutoresizingMaskIntoConstraints = false
         
         // Horizontal separator
         let separator = UIView()
@@ -87,26 +93,27 @@ final class ViewController: UIViewController, ARSessionDelegate {
         self.rosControllerViewProvider = RosControllerViewProvider(pubController: self.pubController!, session: self.session)
         
         // Then stacked vertically
-        let stackView = UIStackView(arrangedSubviews: [rosControllerViewProvider.view!, separator, confidenceControl, rgbRadiusSlider])
-        stackView.isHidden = !isUIEnabled
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.axis = .vertical
-        stackView.spacing = 20
+        self.mainView = UIStackView(arrangedSubviews: [rosControllerViewProvider.view!, separator, confidenceControl, rgbRadiusSlider])
+        self.mainView!.isHidden = !self.isControlsViewEnabled
+        self.mainView!.translatesAutoresizingMaskIntoConstraints = false
+        self.mainView!.axis = .vertical
+        self.mainView!.spacing = 20
         
         view.addSubview(helpPageButton)
-        view.addSubview(stackView)
+        view.addSubview(controlsButton)
+        view.addSubview(mainView!)
         NSLayoutConstraint.activate([
-            stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            stackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50)
-        ])
-        NSLayoutConstraint.activate([
+            self.mainView!.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            self.mainView!.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
             self.helpPageButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -30),
             self.helpPageButton.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -30),
+            self.controlsButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -30),
+            self.controlsButton.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 30),
         ])
     }
     
     @objc
-    func showHelp(sender: UIButton!) {
+    private func showHelp() {
         let helpAlertController = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
         helpAlertController.title = "How to use"
         helpAlertController.message = """
@@ -123,6 +130,13 @@ Then set the remote bridge IP and port to point to it.
         helpAlertController.addAction(openLinkAction)
         helpAlertController.addAction(closeAction)
         self.present(helpAlertController, animated: true)
+    }
+    
+    @objc
+    private func controlsButtonPressed() {
+        // Just invert state
+        self.isControlsViewEnabled = !self.isControlsViewEnabled
+        self.mainView!.isHidden = !self.isControlsViewEnabled
     }
     
     override func viewWillDisappear(_ animated: Bool) {

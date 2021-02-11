@@ -80,6 +80,7 @@ final class RosControllerViewProvider {
         self.initViews(uiLabel: urlTextFieldLabel, labelText: "Remote bridge", uiTextField: urlTextField, uiStatusSwitch: masterSwitch, textFieldPlaceholder: "192.168.0.xyz:abcd")
         
         // Stack with all the ROS config
+        // TODO add separator between IP address and pub controls
         let labelsStackView = self.createVerticalStack(arrangedSubviews: [urlTextFieldLabel, self.transformsEntry.label, self.depthEntry.label, self.pointCloudEntry.label, self.cameraEntry.label])
         let textFieldsStackView = self.createVerticalStack(arrangedSubviews: [urlTextField, UIView(), self.depthEntry.topicNameField!, self.pointCloudEntry.topicNameField!, self.cameraEntry.topicNameField!])
         let statusSwitchesView = self.createVerticalStack(arrangedSubviews: [masterSwitch, self.transformsEntry.stateSwitch, self.depthEntry.stateSwitch, self.pointCloudEntry.stateSwitch, self.cameraEntry.stateSwitch])
