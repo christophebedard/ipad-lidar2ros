@@ -122,19 +122,27 @@ final class ViewController: UIViewController, ARSessionDelegate {
     @objc
     private func showHelp() {
         let helpAlertController = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
-        helpAlertController.title = "How to use"
+        helpAlertController.title = "Help"
         helpAlertController.message = """
-This application sends messages to a rosbridge using the rosbridge v2.0 protocol.
+This application publishes iPad sensor data to a rosbridge using the rosbridge v2.0 protocol.
 
-Launch a rosbridge on a computer accessible from this iPad through the network.
-Then set the remote bridge IP and port to point to it.
+Launch a rosbridge on a computer accessible from this iPad through the network. Then set the remote bridge IP and port to point to it.
+
+Change topic names, enable/disable publishing, or change publishing rate.
+
+For more information, see instructions linked below.
 """
-        let openLinkAction = UIAlertAction(title: "open rosbrige instructions", style: .default) { (action: UIAlertAction) in
-            let url = URLComponents(string: "https://github.com/RobotWebTools/ros2-web-bridge#install")!
+        let openInstructionsLinkAction = UIAlertAction(title: "open instructions", style: .default) { (action: UIAlertAction) in
+            let url = URLComponents(string: "https://github.com/christophebedard/ipad-lidar2ros#using-the-app")!
+            UIApplication.shared.open(url.url!)
+        }
+        let openIssuesLinkAction = UIAlertAction(title: "submit feature request or report bug", style: .default) { (action: UIAlertAction) in
+            let url = URLComponents(string: "https://github.com/christophebedard/ipad-lidar2ros/issues")!
             UIApplication.shared.open(url.url!)
         }
         let closeAction = UIAlertAction(title: "close", style: .cancel)
-        helpAlertController.addAction(openLinkAction)
+        helpAlertController.addAction(openInstructionsLinkAction)
+        helpAlertController.addAction(openIssuesLinkAction)
         helpAlertController.addAction(closeAction)
         self.present(helpAlertController, animated: true)
     }
