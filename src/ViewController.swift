@@ -18,6 +18,7 @@ final class ViewController: UIViewController, ARSessionDelegate {
     private let rgbRadiusSlider = UISlider()
     
     private let helpPageButton = UIButton()
+    private var controlsButtonImages: (hide: UIImage, show: UIImage)?
     private let controlsButton = UIButton()
     private var isControlsViewEnabled = true
     private var mainView: UIStackView?
@@ -68,8 +69,10 @@ final class ViewController: UIViewController, ARSessionDelegate {
         self.helpPageButton.translatesAutoresizingMaskIntoConstraints = false
         
         // Controls display button
-        let controlsIcon = UIImage(systemName: "gearshape.fill", withConfiguration: UIImage.SymbolConfiguration(scale: .large))?.withTintColor(UIColor(white: 1.0, alpha: 0.5), renderingMode: .alwaysOriginal)
-        self.controlsButton.setImage(controlsIcon, for: .normal)
+        let iconHide = UIImage(systemName: "gearshape", withConfiguration: UIImage.SymbolConfiguration(scale: .large))!.withTintColor(UIColor(white: 1.0, alpha: 0.5), renderingMode: .alwaysOriginal)
+        let iconShow = UIImage(systemName: "gearshape.fill", withConfiguration: UIImage.SymbolConfiguration(scale: .large))!.withTintColor(UIColor(white: 1.0, alpha: 0.5), renderingMode: .alwaysOriginal)
+        self.controlsButtonImages = (hide: iconHide, show: iconShow)
+        self.controlsButton.setImage(self.controlsButtonImages!.hide, for: .normal)
         self.controlsButton.addTarget(self, action: #selector(controlsButtonPressed), for: .touchUpInside)
         self.controlsButton.translatesAutoresizingMaskIntoConstraints = false
         
@@ -134,9 +137,10 @@ Then set the remote bridge IP and port to point to it.
     
     @objc
     private func controlsButtonPressed() {
-        // Just invert state
+        // Just invert current state, update view and button
         self.isControlsViewEnabled = !self.isControlsViewEnabled
         self.mainView!.isHidden = !self.isControlsViewEnabled
+        self.controlsButton.setImage(self.mainView!.isHidden ? self.controlsButtonImages!.show : self.controlsButtonImages!.hide, for: .normal)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
