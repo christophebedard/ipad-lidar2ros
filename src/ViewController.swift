@@ -30,7 +30,7 @@ final class ViewController: UIViewController, ARSessionDelegate {
     private var controlsButtonImages: (hide: UIImage, show: UIImage)?
     private let controlsButton = UIButton()
     private var isControlsViewEnabled = true
-    private var mainView: UIStackView?
+    private var mainView: UIStackView!
     
     private var pubController: PubController!
     private var session: ARSession!
@@ -101,14 +101,14 @@ final class ViewController: UIViewController, ARSessionDelegate {
         
         // Then stacked vertically
         self.mainView = UIStackView(arrangedSubviews: [rosControllerViewProvider.view!, separator, rgbVisibilitySlider])
-        self.mainView!.isHidden = !self.isControlsViewEnabled
-        self.mainView!.translatesAutoresizingMaskIntoConstraints = false
-        self.mainView!.axis = .vertical
-        self.mainView!.spacing = 20
+        self.mainView.isHidden = !self.isControlsViewEnabled
+        self.mainView.translatesAutoresizingMaskIntoConstraints = false
+        self.mainView.axis = .vertical
+        self.mainView.spacing = 20
         
         view.addSubview(helpPageButton)
         view.addSubview(controlsButton)
-        view.addSubview(mainView!)
+        view.addSubview(mainView)
         NSLayoutConstraint.activate([
             self.mainView!.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             self.mainView!.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
