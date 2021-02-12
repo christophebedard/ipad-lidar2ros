@@ -52,7 +52,6 @@ final class Renderer {
     private var capturedImageTextureY: CVMetalTexture?
     private var capturedImageTextureCbCr: CVMetalTexture?
     private var depthTexture: CVMetalTexture?
-    private var confidenceTexture: CVMetalTexture?
     
     // Multi-buffer rendering pipeline
     private let inFlightSemaphore: DispatchSemaphore
@@ -78,7 +77,6 @@ final class Renderer {
     private lazy var pointCloudUniforms: PointCloudUniforms = {
         var uniforms = PointCloudUniforms()
         uniforms.maxPoints = Int32(maxPoints)
-        uniforms.confidenceThreshold = Int32(confidenceThreshold)
         uniforms.particleSize = particleSize
         uniforms.cameraResolution = cameraResolution
         return uniforms
@@ -96,13 +94,6 @@ final class Renderer {
     private lazy var lastCameraTransform = sampleFrame.camera.transform
     
     // interfaces
-    var confidenceThreshold = 1 {
-        didSet {
-            // apply the change for the shader
-            pointCloudUniforms.confidenceThreshold = Int32(confidenceThreshold)
-        }
-    }
-    
     var rgbVisibility: Float = 0.25 {
         didSet {
             // apply the change for the shader
@@ -154,13 +145,11 @@ final class Renderer {
     }
     
     private func updateDepthTextures(frame: ARFrame) -> Bool {
-        guard let depthMap = frame.sceneDepth?.depthMap,
-            let confidenceMap = frame.sceneDepth?.confidenceMap else {
-                return false
+        guard let depthMap = frame.sceneDepth?.depthMap else {
+            return false
         }
         
         depthTexture = makeTexture(fromPixelBuffer: depthMap, pixelFormat: .r32Float, planeIndex: 0)
-        confidenceTexture = makeTexture(fromPixelBuffer: confidenceMap, pixelFormat: .r8Uint, planeIndex: 0)
         
         return true
     }
@@ -243,7 +232,7 @@ final class Renderer {
     private func accumulatePoints(frame: ARFrame, commandBuffer: MTLCommandBuffer, renderEncoder: MTLRenderCommandEncoder) {
         pointCloudUniforms.pointCloudCurrentIndex = Int32(currentPointIndex)
         
-        var retainingTextures = [capturedImageTextureY, capturedImageTextureCbCr, depthTexture, confidenceTexture]
+        var retainingTextures = [capturedImageTextureY, capturedImageTextureCbCr, depthTexture]
         commandBuffer.addCompletedHandler { buffer in
             retainingTextures.removeAll()
         }
@@ -256,7 +245,6 @@ final class Renderer {
         renderEncoder.setVertexTexture(CVMetalTextureGetTexture(capturedImageTextureY!), index: Int(kTextureY.rawValue))
         renderEncoder.setVertexTexture(CVMetalTextureGetTexture(capturedImageTextureCbCr!), index: Int(kTextureCbCr.rawValue))
         renderEncoder.setVertexTexture(CVMetalTextureGetTexture(depthTexture!), index: Int(kTextureDepth.rawValue))
-        renderEncoder.setVertexTexture(CVMetalTextureGetTexture(confidenceTexture!), index: Int(kTextureConfidence.rawValue))
         renderEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: gridPointsBuffer.count)
         
         currentPointIndex = (currentPointIndex + gridPointsBuffer.count) % maxPoints

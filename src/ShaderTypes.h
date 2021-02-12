@@ -23,8 +23,7 @@
 enum TextureIndices {
     kTextureY = 0,
     kTextureCbCr = 1,
-    kTextureDepth = 2,
-    kTextureConfidence = 3
+    kTextureDepth = 2
 };
 
 enum BufferIndices {
@@ -48,13 +47,11 @@ struct PointCloudUniforms {
     float particleSize;
     int maxPoints;
     int pointCloudCurrentIndex;
-    int confidenceThreshold;
 };
 
 struct ParticleUniforms {
     simd_float3 position;
     simd_float3 color;
-    float confidence;
 };
 
 #endif /* ShaderTypes_h */

@@ -24,7 +24,6 @@ import OSLog
 final class ViewController: UIViewController, ARSessionDelegate {
     private let logger = Logger(subsystem: "com.christophebedard.lidar2ros", category: "ViewController")
     
-    private let confidenceControl = UISegmentedControl(items: ["Low", "Medium", "High"])
     private let rgbVisibilitySlider = UISlider()
     
     private let helpPageButton = UIButton()
@@ -91,11 +90,6 @@ final class ViewController: UIViewController, ARSessionDelegate {
         separator.heightAnchor.constraint(equalToConstant: 1).isActive = true
         separator.backgroundColor = UIColor.init(white: 1.0, alpha: 0.5)
         
-        // Confidence control
-        confidenceControl.backgroundColor = .white
-        confidenceControl.selectedSegmentIndex = renderer.confidenceThreshold
-        confidenceControl.addTarget(self, action: #selector(textFieldValueChanged), for: .valueChanged)
-        
         // RGB visibility control
         rgbVisibilitySlider.minimumValue = 0.0
         rgbVisibilitySlider.maximumValue = 1.0
@@ -106,7 +100,7 @@ final class ViewController: UIViewController, ARSessionDelegate {
         self.rosControllerViewProvider = RosControllerViewProvider(pubController: self.pubController!, session: self.session)
         
         // Then stacked vertically
-        self.mainView = UIStackView(arrangedSubviews: [rosControllerViewProvider.view!, separator, confidenceControl, rgbVisibilitySlider])
+        self.mainView = UIStackView(arrangedSubviews: [rosControllerViewProvider.view!, separator, rgbVisibilitySlider])
         self.mainView!.isHidden = !self.isControlsViewEnabled
         self.mainView!.translatesAutoresizingMaskIntoConstraints = false
         self.mainView!.axis = .vertical
@@ -176,9 +170,6 @@ Then set the remote bridge IP and port to point to it.
     @objc
     private func textFieldValueChanged(view: UIView) {
         switch view {
-            
-        case confidenceControl:
-            renderer.confidenceThreshold = confidenceControl.selectedSegmentIndex
             
         case rgbVisibilitySlider:
             renderer.rgbVisibility = rgbVisibilitySlider.value

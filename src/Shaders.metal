@@ -50,15 +50,14 @@ static simd_float4 worldPoint(simd_float2 cameraPoint, float depth, matrix_float
     return worldPoint / worldPoint.w;
 }
 
-///  Vertex shader that takes in a 2D grid-point and infers its 3D position in world-space, along with RGB and confidence
+///  Vertex shader that takes in a 2D grid-point and infers its 3D position in world-space, along with RGB
 vertex void unprojectVertex(uint vertexID [[vertex_id]],
                             constant PointCloudUniforms &uniforms [[buffer(kPointCloudUniforms)]],
                             device ParticleUniforms *particleUniforms [[buffer(kParticleUniforms)]],
                             constant float2 *gridPoints [[buffer(kGridPoints)]],
                             texture2d<float, access::sample> capturedImageTextureY [[texture(kTextureY)]],
                             texture2d<float, access::sample> capturedImageTextureCbCr [[texture(kTextureCbCr)]],
-                            texture2d<float, access::sample> depthTexture [[texture(kTextureDepth)]],
-                            texture2d<unsigned int, access::sample> confidenceTexture [[texture(kTextureConfidence)]]) {
+                            texture2d<float, access::sample> depthTexture [[texture(kTextureDepth)]]) {
     
     const auto gridPoint = gridPoints[vertexID];
     const auto currentPointIndex = (uniforms.pointCloudCurrentIndex + vertexID) % uniforms.maxPoints;
@@ -71,13 +70,10 @@ vertex void unprojectVertex(uint vertexID [[vertex_id]],
     // Sample Y and CbCr textures to get the YCbCr color at the given texture coordinate
     const auto ycbcr = float4(capturedImageTextureY.sample(colorSampler, texCoord).r, capturedImageTextureCbCr.sample(colorSampler, texCoord.xy).rg, 1);
     const auto sampledColor = (yCbCrToRGB * ycbcr).rgb;
-    // Sample the confidence map to get the confidence value
-    const auto confidence = confidenceTexture.sample(colorSampler, texCoord).r;
     
     // Write the data to the buffer
     particleUniforms[currentPointIndex].position = position.xyz;
     particleUniforms[currentPointIndex].color = sampledColor;
-    particleUniforms[currentPointIndex].confidence = confidence;
 }
 
 vertex RGBVertexOut rgbVertex(uint vertexID [[vertex_id]],
@@ -110,9 +106,7 @@ vertex ParticleVertexOut particleVertex(uint vertexID [[vertex_id]],
     // get point data
     const auto particleData = particleUniforms[vertexID];
     const auto position = particleData.position;
-    const auto confidence = particleData.confidence;
     const auto sampledColor = particleData.color;
-    const auto visibility = confidence >= uniforms.confidenceThreshold;
     
     // animate and project the point
     float4 projectedPosition = uniforms.viewProjectionMatrix * float4(position, 1.0);
@@ -123,7 +117,7 @@ vertex ParticleVertexOut particleVertex(uint vertexID [[vertex_id]],
     ParticleVertexOut out;
     out.position = projectedPosition;
     out.pointSize = pointSize;
-    out.color = float4(sampledColor, visibility);
+    out.color = float4(sampledColor, 1.0);
     
     return out;
 }
