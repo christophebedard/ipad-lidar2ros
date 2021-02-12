@@ -94,7 +94,7 @@ final class Renderer {
     private lazy var lastCameraTransform = sampleFrame.camera.transform
     
     // interfaces
-    var rgbVisibility: Float = 0.25 {
+    var rgbVisibility: Float = 0.20 {
         didSet {
             // apply the change for the shader
             rgbUniforms.visibility = rgbVisibility
