@@ -58,7 +58,7 @@ final class Renderer {
     // RGB buffer
     private lazy var rgbUniforms: RGBUniforms = {
         var uniforms = RGBUniforms()
-        uniforms.radius = rgbRadius
+        uniforms.visibility = rgbVisibility
         uniforms.viewToCamera.copy(from: viewToCamera)
         uniforms.viewRatio = Float(viewportSize.width / viewportSize.height)
         return uniforms
@@ -93,10 +93,10 @@ final class Renderer {
         }
     }
     
-    var rgbRadius: Float = 0 {
+    var rgbVisibility: Float = 0.25 {
         didSet {
             // apply the change for the shader
-            rgbUniforms.radius = rgbRadius
+            rgbUniforms.visibility = rgbVisibility
         }
     }
     
@@ -195,7 +195,7 @@ final class Renderer {
         }
         
         // check and render rgb camera image
-        if rgbUniforms.radius > 0 {
+        if rgbUniforms.visibility > 0 {
             var retainingTextures = [capturedImageTextureY, capturedImageTextureCbCr]
             commandBuffer.addCompletedHandler { buffer in
                 retainingTextures.removeAll()

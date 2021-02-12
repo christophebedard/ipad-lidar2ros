@@ -26,7 +26,7 @@ enum BufferIndices {
 struct RGBUniforms {
     matrix_float3x3 viewToCamera;
     float viewRatio;
-    float radius;
+    float visibility;
 };
 
 struct PointCloudUniforms {

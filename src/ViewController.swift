@@ -15,7 +15,7 @@ final class ViewController: UIViewController, ARSessionDelegate {
     private let logger = Logger(subsystem: "com.christophebedard.lidar2ros", category: "ViewController")
     
     private let confidenceControl = UISegmentedControl(items: ["Low", "Medium", "High"])
-    private let rgbRadiusSlider = UISlider()
+    private let rgbVisibilitySlider = UISlider()
     
     private let helpPageButton = UIButton()
     private var controlsButtonImages: (hide: UIImage, show: UIImage)?
@@ -86,17 +86,17 @@ final class ViewController: UIViewController, ARSessionDelegate {
         confidenceControl.selectedSegmentIndex = renderer.confidenceThreshold
         confidenceControl.addTarget(self, action: #selector(textFieldValueChanged), for: .valueChanged)
         
-        // RGB Radius control
-        rgbRadiusSlider.minimumValue = 0
-        rgbRadiusSlider.maximumValue = 1.5
-        rgbRadiusSlider.isContinuous = true
-        rgbRadiusSlider.value = renderer.rgbRadius
-        rgbRadiusSlider.addTarget(self, action: #selector(textFieldValueChanged), for: .valueChanged)
+        // RGB visibility control
+        rgbVisibilitySlider.minimumValue = 0.0
+        rgbVisibilitySlider.maximumValue = 1.0
+        rgbVisibilitySlider.isContinuous = true
+        rgbVisibilitySlider.value = renderer.rgbVisibility
+        rgbVisibilitySlider.addTarget(self, action: #selector(textFieldValueChanged), for: .valueChanged)
         
         self.rosControllerViewProvider = RosControllerViewProvider(pubController: self.pubController!, session: self.session)
         
         // Then stacked vertically
-        self.mainView = UIStackView(arrangedSubviews: [rosControllerViewProvider.view!, separator, confidenceControl, rgbRadiusSlider])
+        self.mainView = UIStackView(arrangedSubviews: [rosControllerViewProvider.view!, separator, confidenceControl, rgbVisibilitySlider])
         self.mainView!.isHidden = !self.isControlsViewEnabled
         self.mainView!.translatesAutoresizingMaskIntoConstraints = false
         self.mainView!.axis = .vertical
@@ -170,8 +170,8 @@ Then set the remote bridge IP and port to point to it.
         case confidenceControl:
             renderer.confidenceThreshold = confidenceControl.selectedSegmentIndex
             
-        case rgbRadiusSlider:
-            renderer.rgbRadius = rgbRadiusSlider.value
+        case rgbVisibilitySlider:
+            renderer.rgbVisibility = rgbVisibilitySlider.value
             
         default:
             break
