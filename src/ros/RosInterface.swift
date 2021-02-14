@@ -28,7 +28,7 @@ struct RosbridgeMsg<T> : Encodable where T : Encodable {
 ///
 /// Handles websocket connection and sending data.
 final class RosInterface {
-    private static let URL_REGEX = "^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:\\d{2,4}$"
+    private static let REGEX_URL = "^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:\\d{2,4}$"
     
     private var logger = Logger(subsystem: "com.christophebedard.lidar2ros", category: "RosInterface")
     
@@ -97,8 +97,10 @@ final class RosInterface {
             self.logger.error("publisher already exists for topic: \(topicName)")
             return nil
         }
-        
-        // TODO validate topic name
+        if !RosInterface.isValidTopicName(topicName) {
+            self.logger.error("invalid topic name: \(topicName)")
+            return nil
+        }
         
         let pub = Publisher(interface: self, topicName: topicName, type: type)
         
@@ -170,7 +172,15 @@ final class RosInterface {
     ///
     /// - returns: true if valid, false otherwise
     private static func isValidUrl(_ url: String) -> Bool {
-        return RosInterface.matchesRegex(str: url, regex: RosInterface.URL_REGEX)
+        return RosInterface.matchesRegex(str: url, regex: RosInterface.REGEX_URL)
+    }
+    
+    /// Check if topic name is valid.
+    ///
+    /// - returns: true if valid, false otherwise
+    private static func isValidTopicName(_ topicName: String) -> Bool {
+        // TODO make this better
+        return !topicName.isEmpty
     }
     
     /// Check if a string matches a regex.
