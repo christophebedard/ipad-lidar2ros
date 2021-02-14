@@ -34,11 +34,14 @@ For the data to be published in ROS 2, start [ros2-web-bridge](https://github.co
 To connect to the remote rosbridge, in the app, enter the computer's IP and port (e.g. `x.y.z.a:bcde`, default ros2-web-bridge port is 9090) in the field next to *Remote bridge*.
 Once this is done, the switch next to the field will turn on and the app will connect to the remote rosbridge.
 
+If the switch does not get flipped, it means the app could not connect.
+Check the IP & port and try again.
+
 ### Publishing data
 
 To publish data, turn on one of the other switches.
 The topic names can be changed using the corresponding text fields.
-Approximate publishing rates can be changed using the corresponding steppers.
+Approximate publishing rates can be set using the corresponding steppers.
 
 The table below lists the data available for publishing.
 
