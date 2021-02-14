@@ -40,17 +40,17 @@ final class RosControllerViewProvider {
         var rateStep: Double = 0.5
     }
     
-    private let pubEntries: [PubController.PubType: PubEntry]
-    private let transformsEntry: PubEntry
-    private let depthEntry: PubEntry
-    private let pointCloudEntry: PubEntry
-    private let cameraEntry: PubEntry
+    private var pubEntries: [PubController.PubType: PubEntry]! = nil
+    private var transformsEntry: PubEntry! = nil
+    private var depthEntry: PubEntry! = nil
+    private var pointCloudEntry: PubEntry! = nil
+    private var cameraEntry: PubEntry! = nil
     
     private let session: ARSession
     private let pubController: PubController
     
     /// The provided view.
-    public private(set) var view: UIView?
+    public private(set) var view: UIView! = nil
     
     public init(pubController: PubController, session: ARSession) {
         self.logger.debug("init")
@@ -59,10 +59,10 @@ final class RosControllerViewProvider {
         self.session = session
         
         // Pub UI entries
-        self.transformsEntry = PubEntry(label: UILabel(), labelText: "Transforms", topicNameField: nil, defaultTopicName: nil, stateSwitch: UISwitch(), rateStepper: UIStepper(), rateStepperLabel: UILabel())
-        self.depthEntry = PubEntry(label: UILabel(), labelText: "Depth map", topicNameField: UITextField(), defaultTopicName: "/ipad/depth", stateSwitch: UISwitch(), rateStepper: UIStepper(), rateStepperLabel: UILabel())
-        self.pointCloudEntry = PubEntry(label: UILabel(), labelText: "Point cloud", topicNameField: UITextField(), defaultTopicName: "/ipad/pointcloud", stateSwitch: UISwitch(), rateStepper: UIStepper(), rateStepperLabel: UILabel())
-        self.cameraEntry = PubEntry(label: UILabel(), labelText: "Camera", topicNameField: UITextField(), defaultTopicName: "/ipad/camera", stateSwitch: UISwitch(), rateStepper: UIStepper(), rateStepperLabel: UILabel())
+        self.transformsEntry = self.createPubEntry(pubType: .transforms, labelText: "Transforms")
+        self.depthEntry = self.createPubEntry(pubType: .depth, labelText: "Depth map", defaultTopicName: "/ipad/depth")
+        self.pointCloudEntry = self.createPubEntry(pubType: .pointCloud, labelText: "Point cloud", defaultTopicName: "/ipad/pointcloud")
+        self.cameraEntry = self.createPubEntry(pubType: .camera, labelText: "Camera", defaultTopicName: "/ipad/camera")
         
         self.pubEntries = [
             .transforms: self.transformsEntry,
@@ -70,11 +70,9 @@ final class RosControllerViewProvider {
             .pointCloud: self.pointCloudEntry,
             .camera: self.cameraEntry,
         ]
-        
-        self.initViewsFromEntry(self.transformsEntry)
-        self.initViewsFromEntry(self.depthEntry)
-        self.initViewsFromEntry(self.pointCloudEntry)
-        self.initViewsFromEntry(self.cameraEntry)
+        self.pubEntries.forEach { (_: PubController.PubType, pubEntry: PubEntry) in
+            self.initViewsFromEntry(pubEntry)
+        }
         
         // WebSocket URL field, label, and global switch
         self.initViews(uiLabel: urlTextFieldLabel, labelText: "Remote bridge", uiTextField: urlTextField, uiStatusSwitch: masterSwitch, textFieldPlaceholder: "192.168.0.xyz:abcd")
@@ -92,6 +90,11 @@ final class RosControllerViewProvider {
         rosStackView.spacing = 10
         
         self.view = rosStackView
+    }
+    
+    private func createPubEntry(pubType: PubController.PubType, labelText: String, defaultTopicName: String? = nil) -> PubEntry {
+        let rateDefault = self.pubController.getPubRate(pubType) ?? PubController.defaultRate
+        return PubEntry(label: UILabel(), labelText: labelText, topicNameField: nil != defaultTopicName ? UITextField() : nil, defaultTopicName: defaultTopicName, stateSwitch: UISwitch(), rateStepper: UIStepper(), rateStepperLabel: UILabel(), rateDefault: rateDefault)
     }
     
     private func initViewsFromEntry(_ pubEntry: PubEntry) {

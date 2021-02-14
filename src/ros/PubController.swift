@@ -25,7 +25,7 @@ final class PubController {
         case pointCloud
         case camera
     }
-    public static let defaultRate = 2.0
+    public static let defaultRate = 10.0
     
     private let logger = Logger(subsystem: "com.christophebedard.lidar2ros", category: "PubController")
     
@@ -40,7 +40,7 @@ final class PubController {
         self.controlledPubs = pubs
         self.interface = interface
         self.pubRates = [
-            .transforms: PubController.defaultRate,
+            .transforms: 15.0,
             .depth: PubController.defaultRate,
             .pointCloud: PubController.defaultRate,
             .camera: PubController.defaultRate
