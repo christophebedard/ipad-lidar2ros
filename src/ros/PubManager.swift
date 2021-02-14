@@ -61,6 +61,8 @@ final class PubManager {
                     continue
                 }
                 let interval = 1.0 / self.pubController.getPubRate(pubType)!
+                // TODO find a better way: seems like busy sleep is the
+                // most reliable way to do this but it wastes CPU time
                 var now = Date().timeIntervalSince1970
                 while now - last < interval {
                     now = Date().timeIntervalSince1970
