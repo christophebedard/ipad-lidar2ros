@@ -38,16 +38,16 @@ final class PubManager {
     }
     
     private func updatePub() {
-        let currentFrame = self.session.currentFrame
-        if nil != currentFrame {
-            let timestamp = currentFrame!.timestamp
-            let depthMap = currentFrame!.sceneDepth?.depthMap
-            let pointCloud = currentFrame!.rawFeaturePoints?.points
-            let cameraTf = currentFrame!.camera.transform
-            let cameraImage = currentFrame!.capturedImage
-            if nil != depthMap && nil != pointCloud {
-                self.pubController.update(time: timestamp, depthMap: depthMap!, points: pointCloud!, cameraTf: cameraTf, cameraImage: cameraImage)
-            }
+        guard let currentFrame = self.session.currentFrame else {
+            return
         }
+        let timestamp = currentFrame.timestamp
+        let cameraTf = currentFrame.camera.transform
+        let cameraImage = currentFrame.capturedImage
+        guard let depthMap = currentFrame.sceneDepth?.depthMap,
+              let pointCloud = currentFrame.rawFeaturePoints?.points else {
+                return
+        }
+        self.pubController.update(time: timestamp, depthMap: depthMap, points: pointCloud, cameraTf: cameraTf, cameraImage: cameraImage)
     }
 }

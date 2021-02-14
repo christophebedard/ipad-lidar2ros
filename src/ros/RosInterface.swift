@@ -137,12 +137,11 @@ final class RosInterface {
         
         self.logger.debug("sending data")
         
-        let data = self.toJson(encodable)
-        if nil == data {
+        guard let data = self.toJson(encodable) else {
             return false
         }
         
-        let messageData = URLSessionWebSocketTask.Message.data(data!)
+        let messageData = URLSessionWebSocketTask.Message.data(data)
         self.socket?.send(messageData) { error in
             if let error = error {
                 self.logger.error("error sending over socket")

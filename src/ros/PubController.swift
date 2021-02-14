@@ -62,12 +62,11 @@ final class PubController {
     /// - parameter pubType: the type of the publisher to enable
     /// - parameter topicName: the topicName to use for the publisher
     public func enablePub(pubType: PubType, topicName: String?) -> Bool {
-        let pubs = self.controlledPubs[pubType]
-        if nil == pubs {
+        guard let pubs = self.controlledPubs[pubType] else {
             return false
         }
         var result = true
-        for pub in pubs! {
+        for pub in pubs {
             result = result && pub.enable(topicName: topicName)
         }
         return result
@@ -77,11 +76,10 @@ final class PubController {
     ///
     /// - parameter pubType: the type of the publisher to disable
     public func disablePub(pubType: PubType) {
-        let pubs = self.controlledPubs[pubType]
-        if nil == pubs {
+        guard let pubs = self.controlledPubs[pubType] else {
             return
         }
-        for pub in pubs! {
+        for pub in pubs {
             pub.disable()
         }
     }
@@ -91,12 +89,11 @@ final class PubController {
     /// - parameter topicName: the new topic name
     /// - returns: true if successful, false otherwise
     public func updatePubTopic(pubType: PubType, topicName: String?) -> Bool {
-        let pubs = self.controlledPubs[pubType]
-        if nil == pubs {
+        guard let pubs = self.controlledPubs[pubType] else {
             return false
         }
         var result = true
-        for pub in pubs! {
+        for pub in pubs {
             result = result && pub.updateTopic(topicName: topicName)
         }
         return result
