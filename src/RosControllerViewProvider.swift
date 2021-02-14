@@ -116,7 +116,7 @@ final class RosControllerViewProvider {
         uiStatusSwitch.addTarget(self, action: #selector(switchStatusChanged), for: .valueChanged)
         if nil != pubEntry {
             pubEntry!.rateStepper.autorepeat = true
-            pubEntry!.rateStepper.isContinuous = false
+            pubEntry!.rateStepper.isContinuous = true
             pubEntry!.rateStepper.minimumValue = pubEntry!.rateMin
             pubEntry!.rateStepper.maximumValue = pubEntry!.rateMax
             pubEntry!.rateStepper.stepValue = pubEntry!.rateStep
