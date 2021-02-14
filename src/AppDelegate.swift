@@ -25,7 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
     
-    private let pubManager = PubManager()
+    private var pubManager: PubManager!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         self.logger.info("application")
@@ -35,9 +35,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             window?.rootViewController = storyboard.instantiateViewController(withIdentifier: "unsupportedDeviceMessage")
         } else {
+            self.pubManager = PubManager()
             (window?.rootViewController as! ViewController).setPubManager(pubManager: self.pubManager)
+            self.pubManager.start()
         }
-        self.pubManager.start()
         return true
     }
     
