@@ -245,9 +245,12 @@ final class RosControllerViewProvider {
     }
     
     private func updateRate(_ pubType: PubController.PubType) {
+        // Update display
         let pubEntry = self.pubEntries[pubType]!
-        pubEntry.rateStepperLabel.text = RosControllerViewProvider.rateAsString(pubEntry.rateStepper.value)
-        // TODO change pub rate
+        let rate = pubEntry.rateStepper.value
+        pubEntry.rateStepperLabel.text = RosControllerViewProvider.rateAsString(rate)
+        // Update pub rate
+        self.pubController.updatePubRate(pubType: pubType, rate: rate)
     }
     
     private static func rateAsString(_ rate: Double) -> String {
