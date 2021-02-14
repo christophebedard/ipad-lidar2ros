@@ -225,10 +225,10 @@ final class RosControllerViewProvider {
         if pubEntry.stateSwitch.isOn {
             // Enable publishing
             if self.pubController.enablePub(pubType: pubType, topicName: pubEntry.topicNameField?.text!) {
+                pubEntry.rateStepper.isEnabled = true
                 // Enable master switch if not already enabled
                 if !self.masterSwitch.isOn {
                     self.masterSwitch.setOn(true, animated: true)
-                    pubEntry.rateStepper.isEnabled = true
                     self.updateMasterSwitch()
                 }
             } else {
