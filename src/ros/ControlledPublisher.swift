@@ -30,17 +30,26 @@ class ControlledPublisher {
         self.type = type
     }
     
+    /// Enable controlled publisher.
+    ///
+    /// - parameter topicName: the new topic name to use, or `nil` to keep the current one
+    /// - returns: true if successful, false otherwise
     public func enable(topicName: String? = nil) -> Bool {
         self.logger.debug("enable")
         self.isEnabled = true
         return self.updateTopic(topicName: topicName)
     }
     
+    /// Disable controlled publisher.
     public func disable() {
         self.logger.debug("disable")
         self.isEnabled = false
     }
     
+    /// Publish message.
+    ///
+    /// - parameter msg: the message to publish
+    /// - returns: true if successful, false otherwise
     @discardableResult
     public func publish<T>(_ msg: T) -> Bool where T: RosMsg {
         if !self.isEnabled {
@@ -49,6 +58,10 @@ class ControlledPublisher {
         return self.pub?.publish(msg) ?? true
     }
     
+    /// Update topic name.
+    ///
+    /// - parameter topicName: the new topic name to use
+    /// - returns: true if successful, false otherwise
     public func updateTopic(topicName: String? = nil) -> Bool {
         if nil == topicName {
             return false
