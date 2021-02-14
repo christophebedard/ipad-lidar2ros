@@ -15,7 +15,7 @@ Display a simple help page in the app by pressing the help button in the lower r
 
 ### Setting up a remote rosbridge
 
-For the data to be published in ROS 2, start a [ros2-web-bridge](https://github.com/RobotWebTools/ros2-web-bridge) on a computer on the same network as your iPad (or any network reachable from your iPad).
+For the data to be published in ROS 2, start [ros2-web-bridge](https://github.com/RobotWebTools/ros2-web-bridge) on a computer on the same network as your iPad (or any network reachable from your iPad).
 
 0. Make sure [ROS 2 is installed](https://index.ros.org/doc/ros2/Installation/) and sourced
 1. [Install ros2-web-bridge](https://github.com/RobotWebTools/ros2-web-bridge#install)
