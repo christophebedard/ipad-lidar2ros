@@ -19,7 +19,8 @@ import OSLog
 class ControlledPublisher {
     private var logger = Logger(subsystem: "com.christophebedard.lidar2ros", category: "ControlledPublisher")
     
-    private var isEnabled: Bool = false
+    public private(set) var isEnabled: Bool = false
+    
     private var interface: RosInterface
     private var type: Any
     private var pub: Publisher?
