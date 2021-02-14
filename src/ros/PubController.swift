@@ -25,6 +25,7 @@ final class PubController {
         case pointCloud
         case camera
     }
+    public static let defaultRate = 2.0
     
     private let logger = Logger(subsystem: "com.christophebedard.lidar2ros", category: "PubController")
     

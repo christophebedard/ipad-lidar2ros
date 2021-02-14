@@ -36,7 +36,7 @@ final class RosControllerViewProvider {
         var rateStepperLabel: UILabel
         var rateMin: Double = 0.5
         var rateMax: Double = 20.0
-        var rateDefault: Double = 2.0
+        var rateDefault: Double = PubController.defaultRate
         var rateStep: Double = 0.5
     }
     
