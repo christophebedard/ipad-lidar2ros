@@ -38,6 +38,7 @@ Once this is done, the switch next to the field will turn on and the app will co
 
 To publish data, turn on one of the other switches.
 The topic names can be changed using the corresponding text fields.
+Approximate publishing rates can be changed using the corresponding steppers.
 
 The table below lists the data available for publishing.
 
