@@ -140,19 +140,14 @@ final class RosControllerViewProvider {
     @objc
     private func textFieldValueChanged(view: UIView) {
         switch view {
-            
         case self.urlTextField:
             self.updateUrl()
-            
         case self.depthEntry.topicNameField:
             self.updatePubTopic(.depth)
-            
         case self.pointCloudEntry.topicNameField:
             self.updatePubTopic(.pointCloud)
-            
         case self.cameraEntry.topicNameField:
             self.updatePubTopic(.camera)
-            
         default:
             break
         }
@@ -161,22 +156,16 @@ final class RosControllerViewProvider {
     @objc
     private func switchStatusChanged(view: UIView) {
         switch view {
-            
         case self.masterSwitch:
             self.updateMasterSwitch()
-            
         case self.transformsEntry.stateSwitch:
             self.updateTopicState(.transforms)
-            
         case self.depthEntry.stateSwitch:
             self.updateTopicState(.depth)
-            
         case self.pointCloudEntry.stateSwitch:
             self.updateTopicState(.pointCloud)
-            
         case self.cameraEntry.stateSwitch:
             self.updateTopicState(.camera)
-            
         default:
             break
         }
@@ -185,19 +174,14 @@ final class RosControllerViewProvider {
      @objc
      private func stepperValueChanged(view: UIView) {
         switch view {
-        
         case self.transformsEntry.rateStepper:
             self.updateRate(.transforms)
-        
         case self.depthEntry.rateStepper:
             self.updateRate(.depth)
-
         case self.pointCloudEntry.rateStepper:
             self.updateRate(.pointCloud)
-
         case self.cameraEntry.rateStepper:
             self.updateRate(.camera)
-        
         default:
             break
         }
