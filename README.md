@@ -13,6 +13,8 @@ To run the app, set up an Xcode project and import this.
 
 Display a simple help page in the app by pressing the help button in the lower right corner.
 
+Hide or display the controls by pressing on the gear icon in the bottom left corner.
+
 ### Setting up a remote rosbridge
 
 For the data to be published in ROS 2, start [ros2-web-bridge](https://github.com/RobotWebTools/ros2-web-bridge) on a computer on the same network as your iPad (or any network reachable from your iPad).
