@@ -52,7 +52,7 @@ final class RosControllerViewProvider {
     /// The provided view.
     public private(set) var view: UIView?
     
-    init(pubController: PubController, session: ARSession) {
+    public init(pubController: PubController, session: ARSession) {
         self.logger.debug("init")
         
         self.pubController = pubController

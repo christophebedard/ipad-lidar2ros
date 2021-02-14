@@ -32,7 +32,7 @@ final class PubManager {
     private var pubPointCloud: ControlledPublisher
     private var pubCamera: ControlledPublisher
     
-    init() {
+    public init() {
         /// Create controlled pub objects for all publishers
         self.pubTf = ControlledStaticPublisher(interface: self.interface, type: tf2_msgs__TFMessage.self, topicName: "/tf")
         // FIXME: using /tf only for now because /tf_static does not seem to work

@@ -25,7 +25,7 @@ class ControlledPublisher {
     private var type: Any
     private var pub: Publisher?
     
-    init(interface: RosInterface, type: Any) {
+    public init(interface: RosInterface, type: Any) {
         self.interface = interface
         self.type = type
     }

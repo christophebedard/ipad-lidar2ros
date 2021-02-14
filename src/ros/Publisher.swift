@@ -35,7 +35,7 @@ final class Publisher {
     /// - parameter interface: the ROS interface to use
     /// - parameter topicName: the topic name
     /// - parameter type: the type, as the message struct type
-    init(interface: RosInterface, topicName: String, type: Any) {
+    public init(interface: RosInterface, topicName: String, type: Any) {
         self.interface = interface
         self.topicName = topicName
         self.isAdvertised = false

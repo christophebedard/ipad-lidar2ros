@@ -36,7 +36,7 @@ final class PubController {
     private var controlledPubs: [PubType: [ControlledPublisher]]
     private var pubRates: [PubType: Double]
     
-    init(pubs: [PubType: [ControlledPublisher]], interface: RosInterface) {
+    public init(pubs: [PubType: [ControlledPublisher]], interface: RosInterface) {
         self.controlledPubs = pubs
         self.interface = interface
         self.pubRates = [

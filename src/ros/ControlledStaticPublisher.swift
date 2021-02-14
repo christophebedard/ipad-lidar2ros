@@ -21,7 +21,7 @@ final class ControlledStaticPublisher: ControlledPublisher {
     
     private let topicName: String
     
-    init(interface: RosInterface, type: Any, topicName: String) {
+    public init(interface: RosInterface, type: Any, topicName: String) {
         self.topicName = topicName
         super.init(interface: interface, type: type)
     }
