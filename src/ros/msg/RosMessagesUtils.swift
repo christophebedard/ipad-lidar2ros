@@ -94,42 +94,42 @@ final class RosMessagesUtils {
         return imgArray
     }
     
-//    /// Get sensor_msgs/Image message from time and image.
-//    public static func pixelBufferToImage(time: Double, pixelBuffer: CVPixelBuffer) -> sensor_msgs__Image {
-//        let header = std_msgs__Header(stamp: self.getTimestamp(time), frame_id: "ipad_camera")
-//        let width = CVPixelBufferGetWidth(pixelBuffer)
-//        let height = CVPixelBufferGetHeight(pixelBuffer)
-//        let encoding = sensor_msgs__Image.RGB8
-//        let is_bigendian = UInt8(0)
-//        let bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
-//        let step = bytesPerRow
-//        let data = self.imageBufferToArray(buffer: pixelBuffer, width: width, height: height, bytesPerRow: bytesPerRow)
-//        return sensor_msgs__Image(header: header, height: UInt32(height), width: UInt32(width), encoding: encoding, is_bigendian: is_bigendian, step: UInt32(step), data: data)
-//    }
+    /// Get sensor_msgs/Image message from time and image.
+    public static func pixelBufferToImage(time: Double, pixelBuffer: CVPixelBuffer) -> sensor_msgs__Image {
+        let header = std_msgs__Header(stamp: self.getTimestamp(time), frame_id: "ipad_camera")
+        let width = CVPixelBufferGetWidth(pixelBuffer)
+        let height = CVPixelBufferGetHeight(pixelBuffer)
+        let encoding = sensor_msgs__Image.MONO8 //YUV42
+        let is_bigendian = UInt8(0)
+        let bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
+        let step = 1920//bytesPerRow / 4
+        let data = self.imageBufferToArray(buffer: pixelBuffer, width: width, height: height, bytesPerRow: bytesPerRow)
+        return sensor_msgs__Image(header: header, height: UInt32(height), width: UInt32(width), encoding: encoding, is_bigendian: is_bigendian, step: UInt32(step), data: data)
+    }
     
-//    /// Extract raw array of values from pixel buffer representing camera image data.
-//    private static func imageBufferToArray(buffer: CVPixelBuffer, width: Int, height: Int, bytesPerRow: Int) -> [UInt8] {
-//        // Lock buffer
-//        CVPixelBufferLockBaseAddress(buffer, .readOnly)
-//        // Unlock buffer upon exiting
-//        defer {
-//            CVPixelBufferUnlockBaseAddress(buffer, .readOnly)
-//        }
-//
-//        var imgArray: [UInt8] = []
-//        if let baseAddress = CVPixelBufferGetBaseAddressOfPlane(buffer, 0) {
-//            let buffer = baseAddress.assumingMemoryBound(to: UInt8.self)
-//            for y in (0..<height) {
-//                for x in (0..<width) {
-//                    let ix = y * bytesPerRow + x * 4
-//                    imgArray.append(buffer[ix + 1])
+    /// Extract raw array of values from pixel buffer representing camera image data.
+    private static func imageBufferToArray(buffer: CVPixelBuffer, width: Int, height: Int, bytesPerRow: Int) -> [UInt8] {
+        // Lock buffer
+        CVPixelBufferLockBaseAddress(buffer, .readOnly)
+        // Unlock buffer upon exiting
+        defer {
+            CVPixelBufferUnlockBaseAddress(buffer, .readOnly)
+        }
+
+        var imgArray: [UInt8] = []
+        if let baseAddress = CVPixelBufferGetBaseAddressOfPlane(buffer, 0) {
+            let buffer = baseAddress.assumingMemoryBound(to: UInt8.self)
+            for y in (0..<height) {
+                for x in (0..<width) {
+                    let ix = y * bytesPerRow + x * 4
+                    imgArray.append(buffer[ix + 1])
 //                    imgArray.append(buffer[ix + 2])
 //                    imgArray.append(buffer[ix + 3])
-//                }
-//            }
-//        }
-//        return imgArray
-//    }
+                }
+            }
+        }
+        return imgArray
+    }
     
     /// Get TFMessage message from camera tf.
     public static func tfToTfMsg(time: Double, tf: simd_float4x4) -> tf2_msgs__TFMessage {

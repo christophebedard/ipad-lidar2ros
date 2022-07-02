@@ -80,7 +80,7 @@ final class PubManager {
         self.startPubThread(id: "depth", pubType: .depth, publishFunc: self.publishDepth)
         self.startPubThread(id: "pointcloud", pubType: .pointCloud, publishFunc: self.publishPointCloud)
         // TODO fix/implement
-        // self.startPubThread(id: "camera", pubType: .camera, publishFunc: self.publishCamera)
+        self.startPubThread(id: "camera", pubType: .camera, publishFunc: self.publishCamera)
     }
     
     private func publishTf() {
@@ -116,12 +116,12 @@ final class PubManager {
         self.pubPointCloud.publish(RosMessagesUtils.pointsToPointCloud2(time: timestamp, points: pointCloud))
     }
     
-//    private func publishCamera() {
-//        guard let currentFrame = self.session.currentFrame else {
-//            return
-//        }
-//        let timestamp = currentFrame.timestamp
-//        let cameraImage = currentFrame.capturedImage
-//        self.pubCamera.publish(RosMessagesUtils.pixelBufferToImage(time: time, pixelBuffer: cameraImage))
-//    }
+    private func publishCamera() {
+        guard let currentFrame = self.session.currentFrame else {
+            return
+        }
+        let timestamp = currentFrame.timestamp
+        let cameraImage = currentFrame.capturedImage
+        self.pubCamera.publish(RosMessagesUtils.pixelBufferToImage(time: timestamp, pixelBuffer: cameraImage))
+    }
 }

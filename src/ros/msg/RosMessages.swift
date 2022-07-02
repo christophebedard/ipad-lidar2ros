@@ -49,6 +49,7 @@ struct sensor_msgs__Image: RosMsg {
     static let BGRA16: String = "bgra16"
     static let MONO8: String = "mono8"
     static let MONO16: String = "mono16"
+    static let YUV42: String = "yuv422"
 }
 
 /// std_msgs/String

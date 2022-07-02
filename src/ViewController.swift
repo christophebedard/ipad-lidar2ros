@@ -165,8 +165,10 @@ For more information, see instructions linked below.
         
         // Create a world-tracking configuration, and
         // enable the scene depth frame-semantic.
-        let configuration = ARWorldTrackingConfiguration()
+        var configuration = ARWorldTrackingConfiguration()
         configuration.frameSemantics = .sceneDepth
+        configuration.
+        configuration.videoFormat.imageResolution = CGSize(width: 640, height: 480)
 
         // Run the view's session
         session.run(configuration)
